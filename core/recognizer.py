@@ -39,11 +39,13 @@ class Expression:
                 stack.append(available_operations[token][1](x, y))
             else:
                 stack.append(float(token))
-        return stack[0]
+        return stack[0] if len(stack) == 1 else stack
 
     @classmethod
     def shunting_yard(cls, parsed_formula):
         stack = []
+        opened_scope = 0
+        closed_scope = 0
         for token in parsed_formula:
             if token in available_operations:
                 while stack and stack[-1] != "(" and available_operations[token][0] <= available_operations[stack[-1]][
@@ -51,15 +53,20 @@ class Expression:
                     yield stack.pop()
                 stack.append(token)
             elif token == ")":
+                closed_scope += 1
                 while stack:
                     x = stack.pop()
                     if x == "(":
                         break
                     yield x
             elif token == "(":
+                opened_scope += 1
                 stack.append(token)
             else:
                 yield token
+
+        if opened_scope - closed_scope != 0:
+            raise SyntaxError("Too many Scopes")
         while stack:
             yield stack.pop()
 
@@ -86,10 +93,12 @@ class MathExpression:
         sym_type = self.get_type(self.math_expr[0])
         lexem = self.math_expr[0]
         lexems = []
+        add_multiply = False
         for symbol in self.math_expr[1:]:
             next_type = self.get_type(symbol)
             if issubclass(next_type, Scope):
-                pass
+                if issubclass(sym_type, Digit) and issubclass(next_type, OpenScope):
+                    add_multiply = True
             elif symbol == "." and issubclass(sym_type, Digit) or issubclass(next_type, Digit) and lexem[-1] == ".":
                 lexem += symbol
                 continue
@@ -97,6 +106,9 @@ class MathExpression:
                 lexem += symbol
                 continue
             lexems.append(lexem)
+            if add_multiply:
+                lexems.append("*")
+                add_multiply=False
             sym_type = next_type
             lexem = symbol
         lexems.append(lexem)
@@ -129,39 +141,60 @@ class MathExpression:
                     yield lexem
             else:
                 try:
-                    try:
-                        num = float(lexem)
-                    except ValueError:
-                        num = int(lexem)
-                    i += 1
-                    yield num
+                    num = float(lexem)
                 except ValueError:
                     raise TypeError(f"lexem {lexem} is not recognized")
+                i += 1
+                yield num
+
 
     def get_argument_for_function(self, lexems):
         arguments = []
         sub_expression = []
-        i = 0
+        scopes = 0
+        function = 0
+        i = 1
         for lexem in lexems:
             if lexem == ",":
-                argument = list(self.check_lexems(sub_expression))
-                arguments.extend(argument)
-                sub_expression = []
-                continue
+                i += 1
+                if not function:
+                    argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)))
+                    arguments.append(argument)
+                    sub_expression = []
+                    continue
+                sub_expression.append(lexem)
+            elif lexem in available_functions:
+                function += 1
+                sub_expression.append(lexem)
+                i += 1
             elif lexem == ")":
-                argument = list(self.check_lexems(sub_expression))
-                arguments.extend(argument)
-                return arguments, i + 1
+                i += 1
+                if not scopes:
+                    break
+                if function and scopes:
+                    function -= 1
+                scopes -= 1
+                sub_expression.append(lexem)
+            elif lexem == "(":
+                sub_expression.append(lexem)
+                scopes += 1
+                i += 1
             else:
                 sub_expression.append(lexem)
-            i += 1
+                i += 1
 
-        argument = list(self.check_lexems(sub_expression))
-        arguments.extend(argument)
-        return arguments, 1
+        if sub_expression:
+            argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)))
+            if isinstance(argument, list):
+                arguments.extend(argument)
+            else:
+                arguments.append(argument)
+        if scopes:
+            raise SyntaxError("Forgot closed scope")
+        return arguments, i
 
 
 if __name__ == "__main__":
-    math_expr = MathExpression("1+2**2*2*max(1, 1+1+1, 3)*1")
+    math_expr = MathExpression("10(1+3)")
     expr = math_expr.to_lexems()
     print(Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr))))
