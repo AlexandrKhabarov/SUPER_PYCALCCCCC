@@ -1,4 +1,4 @@
-from core.operatios import available_functions, available_operations, available_order_symbols
+from core.operatios import available_functions, available_operations, available_order_symbols, available_constants
 
 
 class Delimiters:
@@ -134,7 +134,9 @@ class MathExpression:
                     yield result
                 except TypeError:
                     raise Exception("Too many arguments")
-
+            elif lexem in available_constants:
+                yield available_constants[lexem]
+                i += 1
             elif lexem in available_order_symbols:
                 if lexem == "(" or lexem == ")":
                     i += 1
@@ -195,6 +197,6 @@ class MathExpression:
 
 
 if __name__ == "__main__":
-    math_expr = MathExpression("10(1+3)")
+    math_expr = MathExpression("cos(-pi)")
     expr = math_expr.to_lexems()
     print(Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr))))
