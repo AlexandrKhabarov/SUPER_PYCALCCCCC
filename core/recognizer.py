@@ -195,8 +195,10 @@ class MathExpression:
             raise SyntaxError("Forgot closed scope")
         return arguments, i
 
+def calculation(expr):
+    math_expr = MathExpression(expr)
+    expr = math_expr.to_lexems()
+    return Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr)))
 
 if __name__ == "__main__":
-    math_expr = MathExpression("cos(-pi)")
-    expr = math_expr.to_lexems()
-    print(Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr))))
+    print(calculation("1+1"))
