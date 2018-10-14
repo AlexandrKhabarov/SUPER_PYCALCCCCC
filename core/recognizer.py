@@ -99,6 +99,8 @@ class MathExpression:
             if issubclass(next_type, Scope):
                 if issubclass(sym_type, Digit) and issubclass(next_type, OpenScope):
                     add_multiply = True
+            elif issubclass(next_type, Digit) and issubclass(sym_type, CloseScope):
+                add_multiply = True
             elif symbol == "." and issubclass(sym_type, Digit) or issubclass(next_type, Digit) and lexem[-1] == ".":
                 lexem += symbol
                 continue
@@ -130,7 +132,7 @@ class MathExpression:
                 func = available_functions[lexem]
                 try:
                     result = func(*arguments)
-                    i += pos + 3
+                    i += pos + 2
                     yield result
                 except TypeError:
                     raise Exception("Too many arguments")
@@ -155,7 +157,7 @@ class MathExpression:
         sub_expression = []
         scopes = 0
         function = 0
-        i = 1
+        i = 0
         for lexem in lexems:
             if lexem == ",":
                 i += 1
@@ -201,4 +203,4 @@ def calculation(expr):
     return Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr)))
 
 if __name__ == "__main__":
-    print(calculation("1+1"))
+    print(calculation("1+24/3+1!=1+24/3+2"))
