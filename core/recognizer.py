@@ -1,6 +1,6 @@
 from core.operatios import available_functions, available_operations, available_order_symbols, available_constants
 
-
+# TODO add support of spaces between characters and unary "-" for expressions
 class Delimiters:
     pass
 
