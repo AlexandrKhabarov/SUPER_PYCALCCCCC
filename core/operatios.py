@@ -6,12 +6,14 @@ available_operations = {
     "*": (2, lambda x, y: x * y),
     "//": (2, lambda x, y: x // y),
     "**": (3, lambda x, y: x ** y),
+    "%": (2, lambda x, y: x % y),
     "^": (3, lambda x, y: x ** y),
     "<": (0, lambda x, y: x < y),
     ">": (0, lambda x, y: x > y),
     "<=": (0, lambda x, y: x <= y),
     ">=": (0, lambda x, y: x >= y),
     "==": (0, lambda x, y: x >= y),
+    "!=": (0, lambda x, y: x >= y),
     "/": (2, lambda x, y: x / y),
 }
 
