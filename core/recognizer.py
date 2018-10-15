@@ -86,7 +86,7 @@ class MathExpression:
             if issubclass(t, Digit) or issubclass(t, MathExpr):
                 if not (i + 2 >= len(math_expr)):
                     n_ch = math_expr[i + 2]
-                    if math_expr[i+1] == " " and (
+                    if math_expr[i + 1] == " " and (
                             issubclass(self.get_type(n_ch), Digit) or issubclass(self.get_type(n_ch), MathExpr)):
                         raise Exception("Too many spaces")
 
@@ -94,12 +94,12 @@ class MathExpression:
                 if ch == "*" or ch == "/":
                     if not (i + 2 >= len(math_expr)):
                         n_ch = math_expr[i + 2]
-                        if math_expr[i+1] == " " and n_ch == ch:
+                        if math_expr[i + 1] == " " and n_ch == ch:
                             raise Exception("Too many space")
                 elif ch == "<" or ch == ">" or ch == "=":
                     if not (i + 2 >= len(math_expr)):
                         n_ch = math_expr[i + 2]
-                        if math_expr[i+1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
+                        if math_expr[i + 1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
                             raise Exception("Too many spaces")
 
     def get_type(self, symbol):
@@ -140,6 +140,10 @@ class MathExpression:
             sym_type = next_type
             lexem = symbol
         lexems.append(lexem)
+
+        is_changed, lexems = self.change_signs(lexems)
+        while is_changed:
+            is_changed, lexems = self.change_signs(lexems)
         return lexems
 
     def check_lexems(self, lexems):
@@ -222,6 +226,49 @@ class MathExpression:
             raise SyntaxError("Forgot closed scope")
         return arguments, i
 
+    def change_signs(self, lexems):
+        is_changed = False
+        for i in range(len(lexems) - 1):
+            lexem = lexems[i]
+            next_lexem = lexems[i + 1]
+            if lexem in available_operations and lexem in ["-", "+"]:
+                is_dig = False
+                try:
+                    _ = float(next_lexem)
+                    is_dig = True
+                except Exception:
+                    pass
+                if is_dig:
+                    prev_lexem = lexems[i - 1]
+                    is_changed = False
+                    if i == 0 or (
+                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
+                        lexems[i] = lexem + " "
+                        is_changed = True
+                elif next_lexem in available_operations and next_lexem in ["(", "- ", "+ "]:
+                    prev_lexem = lexems[i - 1]
+                    is_changed = False
+                    if i == 0 or (
+                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
+                        lexems[i] = lexem + " "
+                        is_changed = True
+                elif is_dig or next_lexem in available_constants:
+                    prev_lexem = lexems[i - 1]
+                    is_changed = False
+                    if i == 0 or (
+                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
+                        lexems[i] = lexem + " "
+                        is_changed = True
+                elif next_lexem in available_functions:
+                    prev_lexem = lexems[i - 1]
+                    is_changed = False
+                    if i == 0 or (
+                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
+                        lexems[i] = lexem + " "
+                        is_changed = True
+
+        return is_changed, lexems
+
 
 def calculation(expr):
     math_expr = MathExpression(expr)
@@ -230,4 +277,11 @@ def calculation(expr):
 
 
 if __name__ == "__main__":
-    print(calculation("1+24/3+1!=1+24/3+2"))
+    math_expr = MathExpression("-13")
+    print(math_expr.to_lexems())
+    math_expr = MathExpression("6-(-13)")
+    print(math_expr.to_lexems())
+    math_expr = MathExpression("1---1")
+    print(math_expr.to_lexems())
+    math_expr = MathExpression("-+---+-1")
+    print(math_expr.to_lexems())
