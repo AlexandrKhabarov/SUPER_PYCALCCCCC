@@ -1,5 +1,6 @@
 from core.operatios import available_functions, available_operations, available_order_symbols, available_constants
 
+
 # TODO add support of spaces between characters and unary "-" for expressions
 class Delimiters:
     pass
@@ -73,8 +74,32 @@ class Expression:
 
 class MathExpression:
     def __init__(self, math_expr, rules=None):
+        self.check_spaces(math_expr)
         self.math_expr = math_expr.replace(" ", "")
+        # self.math_expr = math_expr.strip()
         self.rules = rules
+
+    def check_spaces(self, math_expr):
+        for i, ch in enumerate(math_expr):
+            t = self.get_type(ch)
+            if issubclass(t, Digit) or issubclass(t, MathExpr):
+                if not (i + 2 >= len(math_expr)):
+                    n_ch = math_expr[i + 2]
+                    if math_expr[i+1] == " " and (
+                            issubclass(self.get_type(n_ch), Digit) or issubclass(self.get_type(n_ch), MathExpr)):
+                        raise Exception("Too many spaces")
+
+            elif issubclass(t, Operator):
+                if ch == "*" or ch == "/":
+                    if not (i + 2 >= len(math_expr)):
+                        n_ch = math_expr[i + 2]
+                        if math_expr[i+1] == " " and n_ch == ch:
+                            raise Exception("Too many space")
+                elif ch == "<" or ch == ">" or ch == "=":
+                    if not (i + 2 >= len(math_expr)):
+                        n_ch = math_expr[i + 2]
+                        if math_expr[i+1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
+                            raise Exception("Too many spaces")
 
     def get_type(self, symbol):
         if symbol.isdigit():
@@ -110,7 +135,7 @@ class MathExpression:
             lexems.append(lexem)
             if add_multiply:
                 lexems.append("*")
-                add_multiply=False
+                add_multiply = False
             sym_type = next_type
             lexem = symbol
         lexems.append(lexem)
@@ -150,7 +175,6 @@ class MathExpression:
                     raise TypeError(f"lexem {lexem} is not recognized")
                 i += 1
                 yield num
-
 
     def get_argument_for_function(self, lexems):
         arguments = []
@@ -197,10 +221,12 @@ class MathExpression:
             raise SyntaxError("Forgot closed scope")
         return arguments, i
 
+
 def calculation(expr):
     math_expr = MathExpression(expr)
     expr = math_expr.to_lexems()
     return Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr)))
+
 
 if __name__ == "__main__":
     print(calculation("1+24/3+1!=1+24/3+2"))

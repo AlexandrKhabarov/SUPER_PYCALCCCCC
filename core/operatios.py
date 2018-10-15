@@ -3,6 +3,8 @@ import inspect
 available_operations = {
     "+": (1, lambda x, y: x + y),
     "-": (1, lambda x, y: x - y),
+    # "+": (3, lambda x: +x),
+    # "-": (3, lambda x: -x),
     "*": (2, lambda x, y: x * y),
     "//": (2, lambda x, y: x // y),
     "**": (3, lambda x, y: x ** y),
