@@ -32,7 +32,7 @@ class CloseScope(Scope):
 
 class Expression:
     @classmethod
-    def calc(cls, polish):
+    def calc(cls, polish, args=False):
         stack = []
         for token in polish:
             if token in available_operations:
@@ -40,6 +40,8 @@ class Expression:
                 stack.append(available_operations[token][1](x, y))
             else:
                 stack.append(float(token))
+        if not args and len(stack) > 1:
+            raise Exception("Didn 't find operator")
         return stack[0] if len(stack) == 1 else stack
 
     @classmethod
@@ -76,7 +78,6 @@ class MathExpression:
     def __init__(self, math_expr, rules=None):
         self.check_spaces(math_expr)
         self.math_expr = math_expr.replace(" ", "")
-        # self.math_expr = math_expr.strip()
         self.rules = rules
 
     def check_spaces(self, math_expr):
@@ -186,7 +187,7 @@ class MathExpression:
             if lexem == ",":
                 i += 1
                 if not function:
-                    argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)))
+                    argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)), args=True)
                     arguments.append(argument)
                     sub_expression = []
                     continue
@@ -212,7 +213,7 @@ class MathExpression:
                 i += 1
 
         if sub_expression:
-            argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)))
+            argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)), args=True)
             if isinstance(argument, list):
                 arguments.extend(argument)
             else:
