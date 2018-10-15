@@ -51,10 +51,17 @@ class Expression:
         closed_scope = 0
         for token in parsed_formula:
             if token in available_operations:
-                while stack and stack[-1] != "(" and available_operations[token][0] <= available_operations[stack[-1]][
-                    0]:
-                    yield stack.pop()
-                stack.append(token)
+                if available_operations[token][2] == "Right":
+                    while stack and stack[-1] != "(" and available_operations[token][0] <= \
+                            available_operations[stack[-1]][
+                                0]:
+                        yield stack.pop()
+                    stack.append(token)
+                elif available_operations[token][2] == "Left":
+                    while stack and stack[-1] != "(" and available_operations[token][0] < \
+                            available_operations[stack[-1]][0]:
+                        yield stack.pop()
+                    stack.append(token)
             elif token == ")":
                 closed_scope += 1
                 while stack:
