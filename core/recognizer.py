@@ -157,6 +157,9 @@ class MathExpression:
                     elif len(lexem) >= 1 and lexem not in available_operations:
                         if lexem + symbol in available_operations:
                             lexem += symbol
+                        else:
+                            lexems.append(lexem)
+                            lexem = symbol
                     continue
                 lexem += symbol
                 continue
@@ -304,7 +307,7 @@ def calculation(expr):
 
 
 if __name__ == "__main__":
-    math_expr = MathExpression("sin(e**log(e**e**sin(23.0),45.0) + cos(3.0+log10(e**-e)))")
+    math_expr = MathExpression(".1 * 2.0**56.0")
     print(math_expr.to_lexems())
     # math_expr = MathExpression("1+2*3==1+2*3")
     # print(math_expr.to_lexems())
