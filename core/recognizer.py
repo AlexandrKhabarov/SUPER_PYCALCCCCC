@@ -142,12 +142,17 @@ class MathExpression:
             elif symbol == "." and issubclass(sym_type, Digit) or issubclass(next_type, Digit) and lexem[-1] == ".":
                 lexem += symbol
                 continue
+            elif issubclass(sym_type, MathExpr) and issubclass(next_type, Digit):
+                lexem += symbol
+                continue
             elif sym_type == next_type:
                 if issubclass(sym_type, Operator):
                     if lexem in available_operations:
                         if lexem + symbol in available_operations:
                             lexem += symbol
                         else:
+                            lexems.append(lexem)
+                            lexem = symbol
                             continue
                     elif len(lexem) >= 1 and lexem not in available_operations:
                         if lexem + symbol in available_operations:
