@@ -36,8 +36,13 @@ class Expression:
         stack = []
         for token in polish:
             if token in available_operations:
-                y, x = stack.pop(), stack.pop()
-                stack.append(available_operations[token][1](x, y))
+                operation = available_operations[token]
+                if operation[1].__code__.co_argcount == 2:
+                    y, x = stack.pop(), stack.pop()
+                    stack.append(operation[1](x, y))
+                elif operation[1].__code__.co_argcount == 1:
+                    y = stack.pop()
+                    stack.append(operation[1](y))
             else:
                 stack.append(float(token))
         if not args and len(stack) > 1:
@@ -138,6 +143,16 @@ class MathExpression:
                 lexem += symbol
                 continue
             elif sym_type == next_type:
+                if issubclass(sym_type, Operator):
+                    if lexem in available_operations:
+                        if lexem + symbol in available_operations:
+                            lexem += symbol
+                        else:
+                            continue
+                    elif len(lexem) >= 1 and lexem not in available_operations:
+                        if lexem + symbol in available_operations:
+                            lexem += symbol
+                    continue
                 lexem += symbol
                 continue
             lexems.append(lexem)
@@ -284,11 +299,9 @@ def calculation(expr):
 
 
 if __name__ == "__main__":
-    math_expr = MathExpression("-13")
+    math_expr = MathExpression("sin(e**log(e**e**sin(23.0),45.0) + cos(3.0+log10(e**-e)))")
     print(math_expr.to_lexems())
-    math_expr = MathExpression("6-(-13)")
-    print(math_expr.to_lexems())
-    math_expr = MathExpression("1---1")
-    print(math_expr.to_lexems())
-    math_expr = MathExpression("-+---+-1")
-    print(math_expr.to_lexems())
+    # math_expr = MathExpression("1+2*3==1+2*3")
+    # print(math_expr.to_lexems())
+    # math_expr = MathExpression("1+24/3+1!=1+24/3+2")
+    # print(math_expr.to_lexems())
