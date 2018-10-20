@@ -114,8 +114,8 @@ class GoodTests(unittest.TestCase):
         self.assertEqual(sin(
             -cos(-sin(3.0) - cos(-sin(-3.0 * 5.0) - sin(cos(log10(43.0)))) + cos(sin(sin(34.0 - 2.0 ** 2.0)))) - -cos(
                 1.0) - -cos(0.0) ** 3.0),
-                         calculation(
-                             "sin(-cos(-sin(3.0)-cos(-sin(-3.0*5.0)-sin(cos(log10(43.0))))+cos(sin(sin(34.0-2.0**2.0))))--cos(1.0)--cos(0.0)**3.0)"))
+            calculation(
+                "sin(-cos(-sin(3.0)-cos(-sin(-3.0*5.0)-sin(cos(log10(43.0))))+cos(sin(sin(34.0-2.0**2.0))))--cos(1.0)--cos(0.0)**3.0)"))
 
     def test_common_tests13(self):
         self.assertEqual(2.0 ** (2.0 ** 2.0 * 2.0 ** 2.0), calculation("2.0**(2.0**2.0*2.0**2.0)"))
@@ -179,6 +179,12 @@ class RaisesTest(unittest.TestCase):
 
     def test_raise17(self):
         self.assertRaises(Exception, calculation, "(((((")
+
+    def test_raise18(self):
+        self.assertRaises(Exception, calculation, "sin(1,2)")
+
+    def test_raise19(self):
+        self.assertRaises(Exception, calculation, "foo(2)")
 
 
 if __name__ == '__main__':
