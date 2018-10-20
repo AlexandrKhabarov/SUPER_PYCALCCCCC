@@ -179,8 +179,9 @@ class MathExpressionParser:
             else:
                 try:
                     num = float(lexem)
-                    if int(num) == num:
-                        num = int(num)
+                    int_num = int(num)
+                    if int_num == num:
+                        num = int_num
                 except ValueError:
                     raise UnrecognizedLexem(lexem)
                 i += 1
