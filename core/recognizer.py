@@ -189,13 +189,13 @@ class MathExpressionParser:
     def get_argument_for_function(self, lexems):
         arguments = []
         sub_expression = []
-        scopes = 0
-        func = 0
+        amount_of_scopes = 0
+        amount_of_funcs = 0
         i = 0
         for lexem in lexems:
             if lexem == ",":
                 i += 1
-                if not func:
+                if not amount_of_funcs:
                     argument = ExpressionCalculator.calc(
                         ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)), args=True)
                     arguments.append(argument)
@@ -203,20 +203,20 @@ class MathExpressionParser:
                     continue
                 sub_expression.append(lexem)
             elif lexem in available_functions:
-                func += 1
+                amount_of_funcs += 1
                 sub_expression.append(lexem)
                 i += 1
             elif lexem == ")":
                 i += 1
-                if not scopes:
+                if not amount_of_scopes:
                     break
-                if func and scopes:
-                    func -= 1
-                scopes -= 1
+                if amount_of_funcs and amount_of_scopes:
+                    amount_of_funcs -= 1
+                amount_of_scopes -= 1
                 sub_expression.append(lexem)
             elif lexem == "(":
                 sub_expression.append(lexem)
-                scopes += 1
+                amount_of_scopes += 1
                 i += 1
             else:
                 sub_expression.append(lexem)
@@ -229,7 +229,7 @@ class MathExpressionParser:
                 arguments.extend(argument)
             else:
                 arguments.append(argument)
-        if scopes:
+        if amount_of_scopes:
             raise TooManyBrackets()
         return arguments, i
 
