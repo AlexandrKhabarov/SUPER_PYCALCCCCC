@@ -19,7 +19,7 @@ class ExpressionCalculator:
                     y = stack.pop()
                     stack.append(operation[1](y))
             else:
-                stack.append(float(token))
+                stack.append(token)
         if not args and len(stack) > 1:
             raise UnrecognizedOperator()
         return stack[0] if len(stack) == 1 else stack
@@ -181,6 +181,8 @@ class MathExpressionParser:
             else:
                 try:
                     num = float(lexem)
+                    if int(num) == num:
+                        num = int(num)
                 except ValueError:
                     raise UnrecognizedLexem(lexem)
                 i += 1
