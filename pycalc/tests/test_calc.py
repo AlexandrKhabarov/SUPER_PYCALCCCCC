@@ -1,7 +1,7 @@
 import unittest
 from math import *
 
-from core.recognizer import calculation
+from pycalc.core.recognizer import calculation
 
 
 class GoodTests(unittest.TestCase):

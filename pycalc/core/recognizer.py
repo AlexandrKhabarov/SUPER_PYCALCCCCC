@@ -1,8 +1,8 @@
-from core.available_names import available_functions, available_constants
-from core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, UnrecognizedLexem, \
+from pycalc.core.available_names import available_functions, available_constants
+from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, UnrecognizedLexem, \
     UnrecognizedFunc
-from core.operatios import available_operations, available_order_symbols
-from core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
+from pycalc.core.operatios import available_operations, available_order_symbols
+from pycalc.core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
 
 
 class ExpressionCalculator:
