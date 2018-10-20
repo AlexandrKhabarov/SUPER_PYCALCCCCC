@@ -1,5 +1,6 @@
 import argparse
 
+
 class ArgumentParser:
 
     @classmethod
@@ -10,4 +11,3 @@ class ArgumentParser:
 
         args = parser.parse_args()
         return args.math_expr, args.module
-
