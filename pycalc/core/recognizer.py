@@ -190,7 +190,7 @@ class MathExpressionParser:
     def get_argument_for_function(self, lexems):
         arguments = []
         sub_expression = []
-        amount_of_scopes = 0
+        amount_of_scopes = 1
         amount_of_funcs = 0
         i = 0
         for lexem in lexems:
@@ -209,11 +209,11 @@ class MathExpressionParser:
                 i += 1
             elif lexem == ")":
                 i += 1
+                amount_of_scopes -= 1
                 if not amount_of_scopes:
                     break
                 if amount_of_funcs and amount_of_scopes:
                     amount_of_funcs -= 1
-                amount_of_scopes -= 1
                 sub_expression.append(lexem)
             elif lexem == "(":
                 sub_expression.append(lexem)
