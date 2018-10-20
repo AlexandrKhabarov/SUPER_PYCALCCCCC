@@ -1,6 +1,7 @@
+from core.available_names import available_functions, available_constants
 from core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, UnrecognizedLexem, \
     UnrecognizedFunc
-from core.operatios import available_functions, available_operations, available_order_symbols, available_constants
+from core.operatios import available_operations, available_order_symbols
 from core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
 
 
