@@ -41,5 +41,3 @@ for avai_name in filter(lambda x: not x.startswith("_"), dir(builtins)):
         available_constants.update({avai_name: obj})
 
 available_order_symbols = {"(", ")"}
-
-AVAILABLE_SYMBOLS = {}

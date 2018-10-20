@@ -1,36 +1,10 @@
+from core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, UnrecognizedLexem, \
+    UnrecognizedFunc
 from core.operatios import available_functions, available_operations, available_order_symbols, available_constants
+from core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
 
 
-# TODO add support of spaces between characters and unary "-" for expressions
-class Delimiters:
-    pass
-
-
-class Digit:
-    pass
-
-
-class Operator:
-    pass
-
-
-class MathExpr:
-    pass
-
-
-class Scope:
-    pass
-
-
-class OpenScope(Scope):
-    pass
-
-
-class CloseScope(Scope):
-    pass
-
-
-class Expression:
+class ExpressionCalculator:
     @classmethod
     def calc(cls, polish, args=False):
         stack = []
@@ -46,7 +20,7 @@ class Expression:
             else:
                 stack.append(float(token))
         if not args and len(stack) > 1:
-            raise Exception("Didn 't find operator")
+            raise UnrecognizedOperator()
         return stack[0] if len(stack) == 1 else stack
 
     @classmethod
@@ -81,12 +55,12 @@ class Expression:
                 yield token
 
         if opened_scope - closed_scope != 0:
-            raise SyntaxError("Too many Scopes")
+            raise TooManyBrackets()
         while stack:
             yield stack.pop()
 
 
-class MathExpression:
+class MathExpressionParser:
     def __init__(self, math_expr, rules=None):
         self.check_spaces(math_expr)
         self.math_expr = math_expr.replace(" ", "")
@@ -100,19 +74,19 @@ class MathExpression:
                     n_ch = math_expr[i + 2]
                     if math_expr[i + 1] == " " and (
                             issubclass(self.get_type(n_ch), Digit) or issubclass(self.get_type(n_ch), MathExpr)):
-                        raise Exception("Too many spaces")
+                        raise TooManySpaces()
 
             elif issubclass(t, Operator):
                 if ch == "*" or ch == "/":
                     if not (i + 2 >= len(math_expr)):
                         n_ch = math_expr[i + 2]
                         if math_expr[i + 1] == " " and n_ch == ch:
-                            raise Exception("Too many space")
+                            raise TooManySpaces()
                 elif ch == "<" or ch == ">" or ch == "=":
                     if not (i + 2 >= len(math_expr)):
                         n_ch = math_expr[i + 2]
                         if math_expr[i + 1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
-                            raise Exception("Too many spaces")
+                            raise TooManySpaces()
 
     def get_type(self, symbol):
         if symbol.isdigit():
@@ -187,7 +161,7 @@ class MathExpression:
 
             elif lexem in available_functions:
                 if lexems[i + 1] not in available_order_symbols:
-                    raise ValueError("Can't solve function")
+                    raise UnrecognizedFunc()
                 arguments, pos = self.get_argument_for_function(lexems[i + 2:])
                 func = available_functions[lexem]
                 try:
@@ -195,7 +169,7 @@ class MathExpression:
                     i += pos + 2
                     yield result
                 except TypeError:
-                    raise Exception("Too many arguments")
+                    raise TooManyArguments()
             elif lexem in available_constants:
                 yield available_constants[lexem]
                 i += 1
@@ -207,7 +181,7 @@ class MathExpression:
                 try:
                     num = float(lexem)
                 except ValueError:
-                    raise TypeError(f"lexem {lexem} is not recognized")
+                    raise UnrecognizedLexem(lexem)
                 i += 1
                 yield num
 
@@ -215,27 +189,28 @@ class MathExpression:
         arguments = []
         sub_expression = []
         scopes = 0
-        function = 0
+        func = 0
         i = 0
         for lexem in lexems:
             if lexem == ",":
                 i += 1
-                if not function:
-                    argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)), args=True)
+                if not func:
+                    argument = ExpressionCalculator.calc(
+                        ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)), args=True)
                     arguments.append(argument)
                     sub_expression = []
                     continue
                 sub_expression.append(lexem)
             elif lexem in available_functions:
-                function += 1
+                func += 1
                 sub_expression.append(lexem)
                 i += 1
             elif lexem == ")":
                 i += 1
                 if not scopes:
                     break
-                if function and scopes:
-                    function -= 1
+                if func and scopes:
+                    func -= 1
                 scopes -= 1
                 sub_expression.append(lexem)
             elif lexem == "(":
@@ -247,16 +222,18 @@ class MathExpression:
                 i += 1
 
         if sub_expression:
-            argument = Expression.calc(Expression.shunting_yard(self.check_lexems(sub_expression)), args=True)
+            argument = ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)),
+                                                 args=True)
             if isinstance(argument, list):
                 arguments.extend(argument)
             else:
                 arguments.append(argument)
         if scopes:
-            raise SyntaxError("Forgot closed scope")
+            raise TooManyBrackets()
         return arguments, i
 
-    def change_signs(self, lexems):
+    @classmethod
+    def change_signs(cls, lexems):
         is_changed = False
         for i in range(len(lexems) - 1):
             lexem = lexems[i]
@@ -266,7 +243,7 @@ class MathExpression:
                 try:
                     _ = float(next_lexem)
                     is_dig = True
-                except Exception:
+                except ValueError:
                     pass
                 if is_dig:
                     prev_lexem = lexems[i - 1]
@@ -301,15 +278,11 @@ class MathExpression:
 
 
 def calculation(expr):
-    math_expr = MathExpression(expr)
+    math_expr = MathExpressionParser(expr)
     expr = math_expr.to_lexems()
-    return Expression.calc(Expression.shunting_yard(math_expr.check_lexems(expr)))
+    return ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(math_expr.check_lexems(expr)))
 
 
 if __name__ == "__main__":
-    math_expr = MathExpression(".1 * 2.0**56.0")
+    math_expr = MathExpressionParser(".1 * 2.0**56.0")
     print(math_expr.to_lexems())
-    # math_expr = MathExpression("1+2*3==1+2*3")
-    # print(math_expr.to_lexems())
-    # math_expr = MathExpression("1+24/3+1!=1+24/3+2")
-    # print(math_expr.to_lexems())
