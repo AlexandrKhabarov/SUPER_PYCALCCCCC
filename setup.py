@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='pycalc_khabarov',
+    name='SUPER_SUPER_PYCALC',
     version='0.0.1',
     description="Pure-python command-line calculator.",
     author="Alexander Khabarov",
