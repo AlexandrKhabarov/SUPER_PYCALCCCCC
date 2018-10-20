@@ -12,12 +12,12 @@ class ExpressionCalculator:
         for token in polish:
             if token in available_operations:
                 operation = available_operations[token]
-                if operation[1].__code__.co_argcount == 2:
+                if operation.co_arguments == 2:
                     y, x = stack.pop(), stack.pop()
-                    stack.append(operation[1](x, y))
-                elif operation[1].__code__.co_argcount == 1:
+                    stack.append(operation.func(x, y))
+                elif operation.co_arguments == 1:
                     y = stack.pop()
-                    stack.append(operation[1](y))
+                    stack.append(operation.func(y))
             else:
                 stack.append(token)
         if not args and len(stack) > 1:
@@ -31,15 +31,13 @@ class ExpressionCalculator:
         closed_scope = 0
         for token in parsed_formula:
             if token in available_operations:
-                if available_operations[token][2] == "Right":
-                    while stack and stack[-1] != "(" and available_operations[token][0] <= \
-                            available_operations[stack[-1]][
-                                0]:
+                operation = available_operations[token]
+                if operation.is_right_associated:
+                    while stack and stack[-1] != "(" and operation.priority <= available_operations[stack[-1]].priority:
                         yield stack.pop()
                     stack.append(token)
-                elif available_operations[token][2] == "Left":
-                    while stack and stack[-1] != "(" and available_operations[token][0] < \
-                            available_operations[stack[-1]][0]:
+                elif not operation.is_right_associated:
+                    while stack and stack[-1] != "(" and operation.priority < available_operations[stack[-1]].priority:
                         yield stack.pop()
                     stack.append(token)
             elif token == ")":
