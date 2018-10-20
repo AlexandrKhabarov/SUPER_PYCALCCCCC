@@ -233,8 +233,16 @@ class MathExpressionParser:
             raise TooManyBrackets()
         return arguments, i
 
-    @classmethod
-    def change_signs(cls, lexems):
+    def change_sign(self, lexem, lexems, index):
+        prev_lexem = lexems[index - 1]
+        is_changed = False
+        if index == 0 or (
+                (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
+            lexems[index] = lexem + " "
+            is_changed = True
+        return is_changed
+
+    def change_signs(self, lexems):
         is_changed = False
         for i in range(len(lexems) - 1):
             lexem = lexems[i]
@@ -247,33 +255,13 @@ class MathExpressionParser:
                 except ValueError:
                     pass
                 if is_dig:
-                    prev_lexem = lexems[i - 1]
-                    is_changed = False
-                    if i == 0 or (
-                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
-                        lexems[i] = lexem + " "
-                        is_changed = True
+                    is_changed = self.change_sign(lexem, lexems, i)
                 elif next_lexem in available_operations and next_lexem in ["(", "- ", "+ "]:
-                    prev_lexem = lexems[i - 1]
-                    is_changed = False
-                    if i == 0 or (
-                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
-                        lexems[i] = lexem + " "
-                        is_changed = True
+                    is_changed = self.change_sign(lexem, lexems, i)
                 elif is_dig or next_lexem in available_constants:
-                    prev_lexem = lexems[i - 1]
-                    is_changed = False
-                    if i == 0 or (
-                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
-                        lexems[i] = lexem + " "
-                        is_changed = True
+                    is_changed = self.change_sign(lexem, lexems, i)
                 elif next_lexem in available_functions:
-                    prev_lexem = lexems[i - 1]
-                    is_changed = False
-                    if i == 0 or (
-                            (prev_lexem in available_operations or prev_lexem in ["(", ")"]) and prev_lexem != ")"):
-                        lexems[i] = lexem + " "
-                        is_changed = True
+                    is_changed = self.change_sign(lexem, lexems, i)
 
         return is_changed, lexems
 
