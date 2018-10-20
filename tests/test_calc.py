@@ -1,6 +1,7 @@
 import unittest
-from core.recognizer import calculation
 from math import *
+
+from core.recognizer import calculation
 
 
 class GoodTests(unittest.TestCase):
@@ -123,6 +124,15 @@ class GoodTests(unittest.TestCase):
     def test_common_tests14(self):
         self.assertEqual(sin(e ** log(e ** e ** sin(23.0), 45.0) + cos(3.0 + log10(e ** -e))),
                          calculation("sin(e**log(e**e**sin(23.0),45.0) + cos(3.0+log10(e**-e)))"))
+
+    def test_builtin_func_test15(self):
+        self.assertEqual(1.5, calculation("round(1.5, 1)"))
+
+    def test_builtin_func_test16(self):
+        self.assertEqual(4, calculation("pow(2, 2)"))
+
+    def test_builtin_func_test17(self):
+        self.assertEqual(1.5, calculation("abs(-1.5)"))
 
 
 class RaisesTest(unittest.TestCase):
