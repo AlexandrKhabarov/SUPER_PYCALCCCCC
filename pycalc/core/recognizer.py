@@ -7,7 +7,7 @@ from pycalc.core.types import Digit, Operator, MathExpr, Scope, OpenScope, Close
 
 class ExpressionCalculator:
     @classmethod
-    def calc(cls, polish, args=False):
+    def calc(cls, polish):
         stack = []
         for token in polish:
             if token in available_operations:
@@ -20,7 +20,7 @@ class ExpressionCalculator:
                     stack.append(operation.func(y))
             else:
                 stack.append(token)
-        if not args and len(stack) > 1:
+        if len(stack) > 1:
             raise UnrecognizedOperator()
         return stack[0] if len(stack) == 1 else stack
 
@@ -198,7 +198,7 @@ class MathExpressionParser:
                 i += 1
                 if not amount_of_funcs:
                     argument = ExpressionCalculator.calc(
-                        ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)), args=True)
+                        ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)))
                     arguments.append(argument)
                     sub_expression = []
                     continue
@@ -224,8 +224,7 @@ class MathExpressionParser:
                 i += 1
 
         if sub_expression:
-            argument = ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)),
-                                                 args=True)
+            argument = ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)))
             if isinstance(argument, list):
                 arguments.extend(argument)
             else:
