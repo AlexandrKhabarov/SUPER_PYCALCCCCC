@@ -124,6 +124,8 @@ class GoodTests(unittest.TestCase):
     def test_common_tests14(self):
         self.assertEqual(sin(e ** log(e ** e ** sin(23.0), 45.0) + cos(3.0 + log10(e ** -e))),
                          calculation("sin(e**log(e**e**sin(23.0),45.0) + cos(3.0+log10(e**-e)))"))
+    def test_common_tests15(self):
+        self.assertEqual(10, calculation("max(1,2,10,max(1,2,3))"))
 
     def test_builtin_func_test15(self):
         self.assertEqual(1.5, calculation("round(1.5, 1)"))
@@ -195,6 +197,12 @@ class RaisesTest(unittest.TestCase):
 
     def test_raise19(self):
         self.assertRaises(Exception, calculation, "foo(2)")
+
+    def test_raise20(self):
+        self.assertRaises(Exception, calculation, "max(1,2,10max(1,2,3))")
+
+    def test_raise21(self):
+        self.assertRaises(Exception, calculation, "sin(,)")
 
 
 if __name__ == '__main__':
