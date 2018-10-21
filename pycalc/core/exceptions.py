@@ -17,9 +17,11 @@ class CustomSyntaxError(SyntaxError, metaclass=ErrorMessageFormatter):
 
 
 class CustomValueError(ValueError, metaclass=ErrorMessageFormatter):
+    pass
 
-    def format_message(self, *args, **kwargs):
-        pass
+
+class CustomModuleNotFoundError(ModuleNotFoundError, metaclass=ErrorMessageFormatter):
+    pass
 
 
 class TooManySpaces(CustomSyntaxError):
@@ -44,3 +46,7 @@ class UnrecognizedLexem(CustomValueError):
 
 class UnrecognizedFunc(CustomValueError):
     ERROR_MESSAGE = "Unrecognized Func"
+
+
+class ModuleNotFound(CustomModuleNotFoundError):
+    ERROR_MESSAGE = "Module aren't found"
