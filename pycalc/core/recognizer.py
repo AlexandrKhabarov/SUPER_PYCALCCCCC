@@ -1,8 +1,7 @@
 from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, \
-    UnrecognizedLexem, \
-    UnrecognizedFunc
+    UnrecognizedLexem, UnrecognizedFunc, NotEnoughArguments, EmptyExpression
 from pycalc.core.operatios import available_operations, available_order_symbols
-from pycalc.core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
+from pycalc.core.types import Digit, Operator, MathExpr, Bracket, OpenBracket, CloseBracket
 
 
 class ExpressionCalculator:
@@ -12,12 +11,15 @@ class ExpressionCalculator:
         for token in polish:
             if token in available_operations:
                 operation = available_operations[token]
-                if operation.co_arguments == 2:
-                    y, x = stack.pop(), stack.pop()
-                    stack.append(operation.func(x, y))
-                elif operation.co_arguments == 1:
-                    y = stack.pop()
-                    stack.append(operation.func(y))
+                try:
+                    if operation.co_arguments == 2:
+                        y, x = stack.pop(), stack.pop()
+                        stack.append(operation.func(x, y))
+                    elif operation.co_arguments == 1:
+                        y = stack.pop()
+                        stack.append(operation.func(y))
+                except IndexError:
+                    raise NotEnoughArguments()
             else:
                 stack.append(token)
         if len(stack) > 1:
@@ -63,6 +65,8 @@ class MathExpressionParser:
     def __init__(self, expression, funcs, consts):
         self.funcs = funcs
         self.consts = consts
+        if not expression:
+            raise EmptyExpression()
         self.check_spaces(expression)
         self.expression = expression.replace(" ", "")
 
@@ -92,9 +96,9 @@ class MathExpressionParser:
         if symbol.isdigit():
             sym_type = Digit
         elif symbol == "(":
-            sym_type = OpenScope
+            sym_type = OpenBracket
         elif symbol == ")":
-            sym_type = CloseScope
+            sym_type = CloseBracket
         elif symbol.isalpha():
             sym_type = MathExpr
         else:
@@ -108,10 +112,10 @@ class MathExpressionParser:
         add_multiply = False
         for symbol in self.expression[1:]:
             next_type = self.get_type(symbol)
-            if issubclass(next_type, Scope):
-                if issubclass(sym_type, Digit) and issubclass(next_type, OpenScope):
+            if issubclass(next_type, Bracket):
+                if issubclass(sym_type, Digit) and issubclass(next_type, OpenBracket):
                     add_multiply = True
-            elif issubclass(next_type, Digit) and issubclass(sym_type, CloseScope):
+            elif issubclass(next_type, Digit) and issubclass(sym_type, CloseBracket):
                 add_multiply = True
             elif symbol == "." and issubclass(sym_type, Digit) or issubclass(next_type, Digit) and lexem[-1] == ".":
                 lexem += symbol
@@ -225,7 +229,8 @@ class MathExpressionParser:
                 i += 1
 
         if sub_expression:
-            argument = ExpressionCalculator.calc(ExpressionCalculator.pops_token_in_right_order(self.check_lexems(sub_expression)))
+            argument = ExpressionCalculator.calc(
+                ExpressionCalculator.pops_token_in_right_order(self.check_lexems(sub_expression)))
             if isinstance(argument, list):
                 arguments.extend(argument)
             else:
