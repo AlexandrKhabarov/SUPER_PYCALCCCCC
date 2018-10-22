@@ -163,11 +163,10 @@ class ImportModulesTest(unittest.TestCase):
 
     @patch("pycalc.core.utils.add_available_names_from_module")
     def test_import_module1(self, add_available_names_from_module):
-        bar = lambda x, y: x + y ** y ** y + x
-        x = 1
-        y = 2
         side_effect = {
-            "side_effect": self.update_functions_and_constants(funcs={"bar": bar}, const={"x": x, "y": y})
+            "side_effect": self.update_functions_and_constants(
+                funcs={"bar": lambda x, y: x + y ** y ** y + x},
+                const={"x": 1, "y": 2})
         }
         add_available_names_from_module.configure_mock(**side_effect)
         add_available_names_from_module(available_functions, available_constants, "test_module")
@@ -175,10 +174,8 @@ class ImportModulesTest(unittest.TestCase):
 
     @patch("pycalc.core.utils.add_available_names_from_module")
     def test_import_module2(self, add_available_names_from_module):
-        x = 4
-        y = 2
         side_effect = {
-            "side_effect": self.update_functions_and_constants(const={"x": x, "y": y})
+            "side_effect": self.update_functions_and_constants(const={"x": 4, "y": 2})
         }
         add_available_names_from_module.configure_mock(**side_effect)
         add_available_names_from_module(available_functions, available_constants, "test_module")
@@ -186,9 +183,9 @@ class ImportModulesTest(unittest.TestCase):
 
     @patch("pycalc.core.utils.add_available_names_from_module")
     def test_import_module3(self, add_available_names_from_module):
-        bar = lambda x: x ** x ** x + x * x // x
         side_effect = {
-            "side_effect": self.update_functions_and_constants(funcs={"bar": bar})
+            "side_effect": self.update_functions_and_constants(
+                funcs={"bar": lambda x: x ** x ** x + x * x // x})
         }
         add_available_names_from_module.configure_mock(**side_effect)
         add_available_names_from_module(available_functions, available_constants, "test_module")
@@ -257,7 +254,8 @@ class RaisesTest(unittest.TestCase):
         self.assertRaises(UnrecognizedLexem, calculation, "foo(2)", available_functions, available_constants)
 
     def test_raise20(self):
-        self.assertRaises(UnrecognizedOperator, calculation, "max(1,2,10max(1,2,3))", available_functions, available_constants)
+        self.assertRaises(UnrecognizedOperator, calculation, "max(1,2,10max(1,2,3))", available_functions,
+                          available_constants)
 
     def test_raise21(self):
         self.assertRaises(TooManyArguments, calculation, "sin(,)", available_functions, available_constants)
