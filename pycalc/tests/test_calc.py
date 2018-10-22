@@ -3,6 +3,8 @@ from math import *
 from unittest.mock import patch
 
 from pycalc.core.available_names import available_functions, available_constants
+from pycalc.core.exceptions import TooManyBrackets, TooManySpaces, UnrecognizedLexem, TooManyArguments, \
+    UnrecognizedOperator, NotEnoughArguments, EmptyExpression
 from pycalc.core.recognizer import calculation
 
 
@@ -195,67 +197,67 @@ class ImportModulesTest(unittest.TestCase):
 
 class RaisesTest(unittest.TestCase):
     def test_raise(self):
-        self.assertRaises(Exception, calculation, "", available_functions, available_constants)
+        self.assertRaises(EmptyExpression, calculation, "", available_functions, available_constants)
 
     def test_raise1(self):
-        self.assertRaises(Exception, calculation, "+", available_functions, available_constants)
+        self.assertRaises(NotEnoughArguments, calculation, "+", available_functions, available_constants)
 
     def test_raise2(self):
-        self.assertRaises(Exception, calculation, "1-", available_functions, available_constants)
+        self.assertRaises(NotEnoughArguments, calculation, "1-", available_functions, available_constants)
 
     def test_raise3(self):
-        self.assertRaises(Exception, calculation, "1 2", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "1 2", available_functions, available_constants)
 
     def test_raise4(self):
-        self.assertRaises(Exception, calculation, "ee", available_functions, available_constants)
+        self.assertRaises(UnrecognizedLexem, calculation, "ee", available_functions, available_constants)
 
     def test_raise5(self):
-        self.assertRaises(Exception, calculation, "123e", available_functions, available_constants)
+        self.assertRaises(UnrecognizedOperator, calculation, "123e", available_functions, available_constants)
 
     def test_raise6(self):
-        self.assertRaises(Exception, calculation, "==7", available_functions, available_constants)
+        self.assertRaises(NotEnoughArguments, calculation, "==7", available_functions, available_constants)
 
     def test_raise7(self):
-        self.assertRaises(Exception, calculation, "1 * * 2", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "1 * * 2", available_functions, available_constants)
 
     def test_raise8(self):
-        self.assertRaises(Exception, calculation, "1 + 2(3 * 4))", available_functions, available_constants)
+        self.assertRaises(TooManyBrackets, calculation, "1 + 2(3 * 4))", available_functions, available_constants)
 
     def test_raise9(self):
-        self.assertRaises(Exception, calculation, "((1+2)", available_functions, available_constants)
+        self.assertRaises(TooManyBrackets, calculation, "((1+2)", available_functions, available_constants)
 
     def test_raise10(self):
-        self.assertRaises(Exception, calculation, "1 + 1 2 3 4 5 6 ", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "1 + 1 2 3 4 5 6 ", available_functions, available_constants)
 
     def test_raise11(self):
-        self.assertRaises(Exception, calculation, "log100(100)", available_functions, available_constants)
+        self.assertRaises(UnrecognizedLexem, calculation, "log100(100)", available_functions, available_constants)
 
     def test_raise12(self):
-        self.assertRaises(Exception, calculation, "------", available_functions, available_constants)
+        self.assertRaises(NotEnoughArguments, calculation, "------", available_functions, available_constants)
 
     def test_raise13(self):
-        self.assertRaises(Exception, calculation, "5 > = 6", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "5 > = 6", available_functions, available_constants)
 
     def test_raise14(self):
-        self.assertRaises(Exception, calculation, "5 / / 6", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "5 / / 6", available_functions, available_constants)
 
     def test_raise15(self):
-        self.assertRaises(Exception, calculation, "6 < = 6", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "6 < = 6", available_functions, available_constants)
 
     def test_raise16(self):
-        self.assertRaises(Exception, calculation, "6 * * 6", available_functions, available_constants)
+        self.assertRaises(TooManySpaces, calculation, "6 * * 6", available_functions, available_constants)
 
     def test_raise17(self):
-        self.assertRaises(Exception, calculation, "(((((", available_functions, available_constants)
+        self.assertRaises(TooManyBrackets, calculation, "(((((", available_functions, available_constants)
 
     def test_raise18(self):
-        self.assertRaises(Exception, calculation, "sin(1,2)", available_functions, available_constants)
+        self.assertRaises(TooManyArguments, calculation, "sin(1,2)", available_functions, available_constants)
 
     def test_raise19(self):
-        self.assertRaises(Exception, calculation, "foo(2)", available_functions, available_constants)
+        self.assertRaises(UnrecognizedLexem, calculation, "foo(2)", available_functions, available_constants)
 
     def test_raise20(self):
-        self.assertRaises(Exception, calculation, "max(1,2,10max(1,2,3))", available_functions, available_constants)
+        self.assertRaises(UnrecognizedOperator, calculation, "max(1,2,10max(1,2,3))", available_functions, available_constants)
 
     def test_raise21(self):
-        self.assertRaises(Exception, calculation, "sin(,)", available_functions, available_constants)
+        self.assertRaises(TooManyArguments, calculation, "sin(,)", available_functions, available_constants)

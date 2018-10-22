@@ -10,13 +10,13 @@ class MathExpr:
     pass
 
 
-class Scope:
+class Bracket:
     pass
 
 
-class OpenScope(Scope):
+class OpenBracket(Bracket):
     pass
 
 
-class CloseScope(Scope):
+class CloseBracket(Bracket):
     pass

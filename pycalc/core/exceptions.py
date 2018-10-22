@@ -24,12 +24,16 @@ class CustomModuleNotFoundError(ModuleNotFoundError, metaclass=ErrorMessageForma
     pass
 
 
+class CustomIndexError(IndexError, metaclass=ErrorMessageFormatter):
+    pass
+
+
 class TooManySpaces(CustomSyntaxError):
     ERROR_MESSAGE = "Too many spaces"
 
 
 class TooManyBrackets(CustomSyntaxError):
-    ERROR_MESSAGE = "Too many brackets"
+    ERROR_MESSAGE = "Brackets are not balanced"
 
 
 class TooManyArguments(CustomSyntaxError):
@@ -50,3 +54,11 @@ class UnrecognizedFunc(CustomValueError):
 
 class ModuleNotFound(CustomModuleNotFoundError):
     ERROR_MESSAGE = "Module aren't found"
+
+
+class NotEnoughArguments(CustomIndexError):
+    ERROR_MESSAGE = "Not enough arguments for operator"
+
+
+class EmptyExpression(CustomIndexError):
+    ERROR_MESSAGE = "Empty expressions aren't calculated"
