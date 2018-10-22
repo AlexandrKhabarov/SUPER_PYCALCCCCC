@@ -9,7 +9,7 @@ def main():
     try:
         for module_name in module_names:
             add_available_names_from_module(available_functions, available_constants, module_name)
-        print(calculation(math_expr))
+        print(calculation(math_expr, available_functions, available_constants))
     except Exception as e:
         print(e)
 

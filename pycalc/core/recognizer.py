@@ -1,5 +1,5 @@
-from pycalc.core.available_names import available_functions, available_constants
-from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, UnrecognizedLexem, \
+from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, \
+    UnrecognizedLexem, \
     UnrecognizedFunc
 from pycalc.core.operatios import available_operations, available_order_symbols
 from pycalc.core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
@@ -25,7 +25,7 @@ class ExpressionCalculator:
         return stack[0] if len(stack) == 1 else stack
 
     @classmethod
-    def shunting_yard(cls, parsed_formula):
+    def pops_token_in_right_order(cls, parsed_formula):
         stack = []
         opened_scope = 0
         closed_scope = 0
@@ -60,31 +60,32 @@ class ExpressionCalculator:
 
 
 class MathExpressionParser:
-    def __init__(self, math_expr, rules=None):
-        self.check_spaces(math_expr)
-        self.math_expr = math_expr.replace(" ", "")
-        self.rules = rules
+    def __init__(self, expression, funcs, consts):
+        self.funcs = funcs
+        self.consts = consts
+        self.check_spaces(expression)
+        self.expression = expression.replace(" ", "")
 
-    def check_spaces(self, math_expr):
-        for i, ch in enumerate(math_expr):
+    def check_spaces(self, expression):
+        for i, ch in enumerate(expression):
             t = self.get_type(ch)
             if issubclass(t, Digit) or issubclass(t, MathExpr):
-                if not (i + 2 >= len(math_expr)):
-                    n_ch = math_expr[i + 2]
-                    if math_expr[i + 1] == " " and (
+                if not (i + 2 >= len(expression)):
+                    n_ch = expression[i + 2]
+                    if expression[i + 1] == " " and (
                             issubclass(self.get_type(n_ch), Digit) or issubclass(self.get_type(n_ch), MathExpr)):
                         raise TooManySpaces()
 
             elif issubclass(t, Operator):
                 if ch == "*" or ch == "/":
-                    if not (i + 2 >= len(math_expr)):
-                        n_ch = math_expr[i + 2]
-                        if math_expr[i + 1] == " " and n_ch == ch:
+                    if not (i + 2 >= len(expression)):
+                        n_ch = expression[i + 2]
+                        if expression[i + 1] == " " and n_ch == ch:
                             raise TooManySpaces()
                 elif ch == "<" or ch == ">" or ch == "=":
-                    if not (i + 2 >= len(math_expr)):
-                        n_ch = math_expr[i + 2]
-                        if math_expr[i + 1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
+                    if not (i + 2 >= len(expression)):
+                        n_ch = expression[i + 2]
+                        if expression[i + 1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
                             raise TooManySpaces()
 
     def get_type(self, symbol):
@@ -101,11 +102,11 @@ class MathExpressionParser:
         return sym_type
 
     def to_lexems(self):
-        sym_type = self.get_type(self.math_expr[0])
-        lexem = self.math_expr[0]
+        sym_type = self.get_type(self.expression[0])
+        lexem = self.expression[0]
         lexems = []
         add_multiply = False
-        for symbol in self.math_expr[1:]:
+        for symbol in self.expression[1:]:
             next_type = self.get_type(symbol)
             if issubclass(next_type, Scope):
                 if issubclass(sym_type, Digit) and issubclass(next_type, OpenScope):
@@ -158,19 +159,19 @@ class MathExpressionParser:
                 i += 1
                 yield lexem
 
-            elif lexem in available_functions:
+            elif lexem in self.funcs:
                 if lexems[i + 1] not in available_order_symbols:
                     raise UnrecognizedFunc()
                 arguments, pos = self.get_argument_for_function(lexems[i + 2:])
-                func = available_functions[lexem]
+                func = self.funcs[lexem]
                 try:
                     result = func(*arguments)
                     i += pos + 2
                     yield result
                 except TypeError:
                     raise TooManyArguments()
-            elif lexem in available_constants:
-                yield available_constants[lexem]
+            elif lexem in self.consts:
+                yield self.consts[lexem]
                 i += 1
             elif lexem in available_order_symbols:
                 if lexem == "(" or lexem == ")":
@@ -198,12 +199,12 @@ class MathExpressionParser:
                 i += 1
                 if not amount_of_funcs:
                     argument = ExpressionCalculator.calc(
-                        ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)))
+                        ExpressionCalculator.pops_token_in_right_order(self.check_lexems(sub_expression)))
                     arguments.append(argument)
                     sub_expression = []
                     continue
                 sub_expression.append(lexem)
-            elif lexem in available_functions:
+            elif lexem in self.funcs:
                 amount_of_funcs += 1
                 sub_expression.append(lexem)
                 i += 1
@@ -224,7 +225,7 @@ class MathExpressionParser:
                 i += 1
 
         if sub_expression:
-            argument = ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(self.check_lexems(sub_expression)))
+            argument = ExpressionCalculator.calc(ExpressionCalculator.pops_token_in_right_order(self.check_lexems(sub_expression)))
             if isinstance(argument, list):
                 arguments.extend(argument)
             else:
@@ -258,20 +259,15 @@ class MathExpressionParser:
                     is_changed = self.change_sign(lexem, lexems, i)
                 elif next_lexem in available_operations and next_lexem in ["(", "- ", "+ "]:
                     is_changed = self.change_sign(lexem, lexems, i)
-                elif is_dig or next_lexem in available_constants:
+                elif is_dig or next_lexem in self.consts:
                     is_changed = self.change_sign(lexem, lexems, i)
-                elif next_lexem in available_functions:
+                elif next_lexem in self.funcs:
                     is_changed = self.change_sign(lexem, lexems, i)
 
         return is_changed, lexems
 
 
-def calculation(expr):
-    math_expr = MathExpressionParser(expr)
+def calculation(expr, funcs, consts):
+    math_expr = MathExpressionParser(expr, funcs, consts)
     expr = math_expr.to_lexems()
-    return ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(math_expr.check_lexems(expr)))
-
-
-if __name__ == "__main__":
-    math_expr = MathExpressionParser(".1 * 2.0**56.0")
-    print(math_expr.to_lexems())
+    return ExpressionCalculator.calc(ExpressionCalculator.pops_token_in_right_order(math_expr.check_lexems(expr)))
