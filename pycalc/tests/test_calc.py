@@ -150,9 +150,14 @@ class GoodTests(unittest.TestCase):
 
 
 class ImportModulesTest(unittest.TestCase):
+
+    def setUp(self):
+        self.available_functions = available_functions.copy()
+        self.available_constants = available_constants.copy()
+
     def update_functions_and_constants(self, funcs=None, const=None):
-        available_functions.update(funcs or {})
-        available_constants.update(const or {})
+        self.available_functions.update(funcs or {})
+        self.available_constants.update(const or {})
 
     @patch("pycalc.core.utils.add_available_names_from_module")
     def test_import_module1(self, add_available_names_from_module):
@@ -164,7 +169,7 @@ class ImportModulesTest(unittest.TestCase):
         }
         add_available_names_from_module.configure_mock(**side_effect)
         add_available_names_from_module(available_functions, available_constants, "test_module")
-        self.assertEqual(18, calculation("bar(x,y)"))
+        self.assertEqual(18, calculation("bar(x,y)", self.available_functions, self.available_constants))
 
     @patch("pycalc.core.utils.add_available_names_from_module")
     def test_import_module2(self, add_available_names_from_module):
@@ -175,7 +180,7 @@ class ImportModulesTest(unittest.TestCase):
         }
         add_available_names_from_module.configure_mock(**side_effect)
         add_available_names_from_module(available_functions, available_constants, "test_module")
-        self.assertEqual(32, calculation("10+x+y**x+y"))
+        self.assertEqual(32, calculation("10+x+y**x+y", self.available_functions, self.available_constants))
 
     @patch("pycalc.core.utils.add_available_names_from_module")
     def test_import_module3(self, add_available_names_from_module):
@@ -185,7 +190,7 @@ class ImportModulesTest(unittest.TestCase):
         }
         add_available_names_from_module.configure_mock(**side_effect)
         add_available_names_from_module(available_functions, available_constants, "test_module")
-        self.assertEqual(8, calculation("bar(2) - 10"))
+        self.assertEqual(8, calculation("bar(2) - 10", self.available_functions, self.available_constants))
 
 
 class RaisesTest(unittest.TestCase):
