@@ -73,14 +73,14 @@ class MathExpressionParser:
     def check_spaces(self, expression):
         for i, ch in enumerate(expression):
             t = self.get_type(ch)
-            if issubclass(t, Digit) or issubclass(t, MathExpr):
+            if isinstance(t, Digit) or isinstance(t, MathExpr):
                 if not (i + 2 >= len(expression)):
                     n_ch = expression[i + 2]
                     if expression[i + 1] == " " and (
-                            issubclass(self.get_type(n_ch), Digit) or issubclass(self.get_type(n_ch), MathExpr)):
+                            isinstance(self.get_type(n_ch), Digit) or isinstance(self.get_type(n_ch), MathExpr)):
                         raise TooManySpaces()
 
-            elif issubclass(t, Operator):
+            elif isinstance(t, Operator):
                 if ch == "*" or ch == "/":
                     if not (i + 2 >= len(expression)):
                         n_ch = expression[i + 2]
@@ -94,15 +94,15 @@ class MathExpressionParser:
 
     def get_type(self, symbol):
         if symbol.isdigit():
-            sym_type = Digit
+            sym_type = Digit()
         elif symbol == "(":
-            sym_type = OpenBracket
+            sym_type = OpenBracket()
         elif symbol == ")":
-            sym_type = CloseBracket
+            sym_type = CloseBracket()
         elif symbol.isalpha():
-            sym_type = MathExpr
+            sym_type = MathExpr()
         else:
-            sym_type = Operator
+            sym_type = Operator()
         return sym_type
 
     def to_lexems(self):
@@ -112,19 +112,19 @@ class MathExpressionParser:
         add_multiply = False
         for symbol in self.expression[1:]:
             next_type = self.get_type(symbol)
-            if issubclass(next_type, Bracket):
-                if issubclass(sym_type, Digit) and issubclass(next_type, OpenBracket):
+            if isinstance(next_type, Bracket):
+                if isinstance(sym_type, Digit) and isinstance(next_type, OpenBracket):
                     add_multiply = True
-            elif issubclass(next_type, Digit) and issubclass(sym_type, CloseBracket):
+            elif isinstance(next_type, Digit) and isinstance(sym_type, CloseBracket):
                 add_multiply = True
-            elif symbol == "." and issubclass(sym_type, Digit) or issubclass(next_type, Digit) and lexem[-1] == ".":
+            elif symbol == "." and isinstance(sym_type, Digit) or isinstance(next_type, Digit) and lexem[-1] == ".":
                 lexem += symbol
                 continue
-            elif issubclass(sym_type, MathExpr) and issubclass(next_type, Digit):
+            elif isinstance(sym_type, MathExpr) and isinstance(next_type, Digit):
                 lexem += symbol
                 continue
             elif sym_type == next_type:
-                if issubclass(sym_type, Operator):
+                if isinstance(sym_type, Operator):
                     if lexem in available_operations:
                         if lexem + symbol in available_operations:
                             lexem += symbol
