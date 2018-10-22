@@ -1,6 +1,8 @@
 import unittest
 from math import *
+from unittest.mock import patch
 
+from pycalc.core.available_names import available_functions, available_constants
 from pycalc.core.recognizer import calculation
 
 
@@ -138,6 +140,45 @@ class GoodTests(unittest.TestCase):
         self.assertEqual(1.5, calculation("abs(-1.5)"))
 
 
+class ImportModulesTest(unittest.TestCase):
+    def update_functions_and_constants(self, funcs=None, const=None):
+        available_functions.update(funcs or {})
+        available_constants.update(const or {})
+
+    @patch("pycalc.core.utils.add_available_names_from_module")
+    def test_import_module1(self, add_available_names_from_module):
+        bar = lambda x, y: x + y ** y ** y + x
+        x = 1
+        y = 2
+        side_effect = {
+            "side_effect": self.update_functions_and_constants(funcs={"bar": bar}, const={"x": x, "y": y})
+        }
+        add_available_names_from_module.configure_mock(**side_effect)
+        add_available_names_from_module(available_functions, available_constants, "test_module")
+        self.assertEqual(18, calculation("bar(x,y)"))
+
+    @patch("pycalc.core.utils.add_available_names_from_module")
+    def test_import_module2(self, add_available_names_from_module):
+        x = 4
+        y = 2
+        side_effect = {
+            "side_effect": self.update_functions_and_constants(const={"x": x, "y": y})
+        }
+        add_available_names_from_module.configure_mock(**side_effect)
+        add_available_names_from_module(available_functions, available_constants, "test_module")
+        self.assertEqual(32, calculation("10+x+y**x+y"))
+
+    @patch("pycalc.core.utils.add_available_names_from_module")
+    def test_import_module3(self, add_available_names_from_module):
+        bar = lambda x: x ** x ** x + x * x // x
+        side_effect = {
+            "side_effect": self.update_functions_and_constants(funcs={"bar": bar})
+        }
+        add_available_names_from_module.configure_mock(**side_effect)
+        add_available_names_from_module(available_functions, available_constants, "test_module")
+        self.assertEqual(8, calculation("bar(2) - 10"))
+
+
 class RaisesTest(unittest.TestCase):
     def test_raise(self):
         self.assertRaises(Exception, calculation, "")
@@ -204,7 +245,3 @@ class RaisesTest(unittest.TestCase):
 
     def test_raise21(self):
         self.assertRaises(Exception, calculation, "sin(,)")
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,5 +1,6 @@
 from pycalc.core.available_names import available_functions, available_constants
-from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, UnrecognizedLexem, \
+from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, \
+    UnrecognizedLexem, \
     UnrecognizedFunc
 from pycalc.core.operatios import available_operations, available_order_symbols
 from pycalc.core.types import Digit, Operator, MathExpr, Scope, OpenScope, CloseScope
@@ -270,8 +271,3 @@ def calculation(expr):
     math_expr = MathExpressionParser(expr)
     expr = math_expr.to_lexems()
     return ExpressionCalculator.calc(ExpressionCalculator.shunting_yard(math_expr.check_lexems(expr)))
-
-
-if __name__ == "__main__":
-    math_expr = MathExpressionParser(".1 * 2.0**56.0")
-    print(math_expr.to_lexems())
