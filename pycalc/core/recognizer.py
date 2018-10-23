@@ -1,13 +1,16 @@
+from typing import List, Dict, Union, Callable, Any, Generator, Tuple
+
 from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, \
     UnrecognizedLexem, UnrecognizedFunc, NotEnoughArguments, EmptyExpression
 from pycalc.core.operatios import available_operations, available_order_symbols
-from pycalc.core.types import Digit, Operator, MathExpr, Bracket, OpenBracket, CloseBracket
+from pycalc.core.types import Digit, Operator, MathExpr, Bracket, OpenBracket, CloseBracket, CustomType
 
 
 class ExpressionCalculator:
     @classmethod
-    def calc(cls, polish):
-        stack = []
+    def calc(cls, polish: Generator[Union[int, float, str], None, None]) -> Union[int, float, complex, List]:
+        """Calculator of parsed math expression"""
+        stack: List[Union[int, float]] = []
         for token in polish:
             if token in available_operations:
                 operation = available_operations[token]
@@ -27,8 +30,9 @@ class ExpressionCalculator:
         return stack[0] if len(stack) == 1 else stack
 
     @classmethod
-    def pops_token_in_right_order(cls, parsed_formula):
-        stack = []
+    def pops_token_in_right_order(cls, parsed_formula: Generator[Union[int, float, str], None, None]):
+        """pop tokens to the calculation in the right order"""
+        stack: List[Union[int, float, str]] = []
         opened_scope = 0
         closed_scope = 0
         for token in parsed_formula:
@@ -62,7 +66,7 @@ class ExpressionCalculator:
 
 
 class MathExpressionParser:
-    def __init__(self, expression, funcs, consts):
+    def __init__(self, expression: str, funcs: Dict[str, Callable[..., Any]], consts: Dict[str, Union[int, float]]):
         self.funcs = funcs
         self.consts = consts
         if not expression:
@@ -70,7 +74,8 @@ class MathExpressionParser:
         self.check_spaces(expression)
         self.expression = expression.replace(" ", "")
 
-    def check_spaces(self, expression):
+    def check_spaces(self, expression: str) -> None:
+        """Check availability of positions of spaces in source expression"""
         for i, ch in enumerate(expression):
             t = self.get_type(ch)
             if isinstance(t, Digit) or isinstance(t, MathExpr):
@@ -92,7 +97,8 @@ class MathExpressionParser:
                         if expression[i + 1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
                             raise TooManySpaces()
 
-    def get_type(self, symbol):
+    def get_type(self, symbol: str) ->  CustomType:
+        """check type of lexem by supported types"""
         if symbol.isdigit():
             sym_type = Digit()
         elif symbol == "(":
@@ -105,7 +111,8 @@ class MathExpressionParser:
             sym_type = Operator()
         return sym_type
 
-    def to_lexems(self):
+    def to_lexems(self) -> list:
+        """Parse source string by rules"""
         sym_type = self.get_type(self.expression[0])
         lexem = self.expression[0]
         lexems = []
@@ -154,7 +161,8 @@ class MathExpressionParser:
             is_changed, lexems = self.change_signs(lexems)
         return lexems
 
-    def check_lexems(self, lexems):
+    def check_lexems(self, lexems: List[str]) -> Generator[Union[int, float, str], None, None]:
+        """Check possibility of positions of lexems"""
         len_lexems = len(lexems)
         i = 0
         while i < len_lexems:
@@ -192,7 +200,8 @@ class MathExpressionParser:
                 i += 1
                 yield num
 
-    def get_argument_for_function(self, lexems):
+    def get_argument_for_function(self, lexems: List[str]) -> Tuple[List[Union[int, float]], int]:
+        """Get argument for function from for calculation"""
         arguments = []
         sub_expression = []
         amount_of_scopes = 1
@@ -239,7 +248,8 @@ class MathExpressionParser:
             raise TooManyBrackets()
         return arguments, i
 
-    def change_sign(self, lexem, lexems, index):
+    def change_sign(self, lexem: str, lexems: List[str], index: int) -> bool:
+        """Check situation when changing signs is possible """
         prev_lexem = lexems[index - 1]
         is_changed = False
         if index == 0 or (
@@ -248,7 +258,8 @@ class MathExpressionParser:
             is_changed = True
         return is_changed
 
-    def change_signs(self, lexems):
+    def change_signs(self, lexems: List[str]) -> Tuple[bool, List[str]]:
+        """Change sings from binary to unary"""
         is_changed = False
         for i in range(len(lexems) - 1):
             lexem = lexems[i]
