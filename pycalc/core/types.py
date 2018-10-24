@@ -1,5 +1,8 @@
+from typing import Type, Dict, Any
+
+
 class SingleTonClass(type):
-    CLASSES = {}
+    CLASSES: Dict[str, Type[Any]] = {}
 
     def __call__(cls, *args, **kwargs):
         if cls.__name__ in cls.CLASSES:
@@ -9,19 +12,23 @@ class SingleTonClass(type):
         return inst
 
 
-class Digit(metaclass=SingleTonClass):
+class CustomType(metaclass=SingleTonClass):
     pass
 
 
-class Operator(metaclass=SingleTonClass):
+class Digit(CustomType):
     pass
 
 
-class MathExpr(metaclass=SingleTonClass):
+class Operator(CustomType):
     pass
 
 
-class Bracket(metaclass=SingleTonClass):
+class MathExpr(CustomType):
+    pass
+
+
+class Bracket(CustomType):
     pass
 
 
