@@ -39,6 +39,6 @@ ERROR: negative number cannot be raised to a fractional power
 * Package export CLI utility named `pycalc`.
 
 ### Codestyle
-* Docstrings are mandatory for all methods, classes, functions and modules.
-* Code correspond to pep8 (use `pycodestyle` utility for self-check).
-  * You can set line length up to 120 symbols.
+* Each methods, classes, functions and modules has docstring that describe behaviour of function.
+* Code correspond to pep8.
+* Each line length up to 120 symbols.
