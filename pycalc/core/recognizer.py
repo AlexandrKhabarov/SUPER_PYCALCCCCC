@@ -5,12 +5,19 @@ from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArgume
 from pycalc.core.operatios import available_operations, available_order_symbols
 from pycalc.core.types import Digit, Operator, MathExpr, Bracket, OpenBracket, CloseBracket, CustomType
 
+RealNumber = Union[int, float]
+Number = Union[RealNumber, complex]
+CharList = List[str]
+LexemGenerator = Generator[Union[RealNumber, str], None, None]
+DictWithConsts = Dict[str, Union[RealNumber]]
+DictWithFuncs = Dict[str, Callable[..., Any]]
+
 
 class ExpressionCalculator:
     @classmethod
-    def calc(cls, polish: Generator[Union[int, float, str], None, None]) -> Union[int, float, complex, List]:
+    def calc(cls, polish: LexemGenerator) -> Union[Number, List]:
         """Calculator of parsed math expression"""
-        stack: List[Union[int, float]] = []
+        stack: List[Union[RealNumber]] = []
         for token in polish:
             if token in available_operations:
                 operation = available_operations[token]
@@ -30,7 +37,7 @@ class ExpressionCalculator:
         return stack[0] if len(stack) == 1 else stack
 
     @classmethod
-    def pops_token_in_right_order(cls, parsed_formula: Generator[Union[int, float, str], None, None]):
+    def pops_token_in_right_order(cls, parsed_formula: LexemGenerator):
         """pop tokens to the calculation in the right order"""
         stack: List[Union[int, float, str]] = []
         opened_scope = 0
@@ -66,7 +73,7 @@ class ExpressionCalculator:
 
 
 class MathExpressionParser:
-    def __init__(self, expression: str, funcs: Dict[str, Callable[..., Any]], consts: Dict[str, Union[int, float]]):
+    def __init__(self, expression: str, funcs: DictWithFuncs, consts: DictWithConsts):
         self.funcs = funcs
         self.consts = consts
         if not expression:
@@ -97,7 +104,7 @@ class MathExpressionParser:
                         if expression[i + 1] == " " and (n_ch == "<" or n_ch == ">" or n_ch == "="):
                             raise TooManySpaces()
 
-    def get_type(self, symbol: str) ->  CustomType:
+    def get_type(self, symbol: str) -> CustomType:
         """check type of lexem by supported types"""
         if symbol.isdigit():
             sym_type = Digit()
@@ -111,7 +118,7 @@ class MathExpressionParser:
             sym_type = Operator()
         return sym_type
 
-    def to_lexems(self) -> list:
+    def to_lexems(self) -> CharList:
         """Parse source string by rules"""
         sym_type = self.get_type(self.expression[0])
         lexem = self.expression[0]
@@ -161,7 +168,7 @@ class MathExpressionParser:
             is_changed, lexems = self.change_signs(lexems)
         return lexems
 
-    def check_lexems(self, lexems: List[str]) -> Generator[Union[int, float, str], None, None]:
+    def check_lexems(self, lexems: CharList) -> LexemGenerator:
         """Check possibility of positions of lexems"""
         len_lexems = len(lexems)
         i = 0
@@ -200,7 +207,7 @@ class MathExpressionParser:
                 i += 1
                 yield num
 
-    def get_argument_for_function(self, lexems: List[str]) -> Tuple[List[Union[int, float]], int]:
+    def get_argument_for_function(self, lexems: CharList) -> Tuple[List[Union[RealNumber]], int]:
         """Get argument for function from for calculation"""
         arguments = []
         sub_expression = []
@@ -248,7 +255,7 @@ class MathExpressionParser:
             raise TooManyBrackets()
         return arguments, i
 
-    def change_sign(self, lexem: str, lexems: List[str], index: int) -> bool:
+    def change_sign(self, lexem: str, lexems: CharList, index: int) -> bool:
         """Check situation when changing signs is possible """
         prev_lexem = lexems[index - 1]
         is_changed = False
@@ -258,7 +265,7 @@ class MathExpressionParser:
             is_changed = True
         return is_changed
 
-    def change_signs(self, lexems: List[str]) -> Tuple[bool, List[str]]:
+    def change_signs(self, lexems: CharList) -> Tuple[bool, CharList]:
         """Change sings from binary to unary"""
         is_changed = False
         for i in range(len(lexems) - 1):
