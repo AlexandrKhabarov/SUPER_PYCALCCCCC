@@ -34,20 +34,23 @@ class ParseTestCase(unittest.TestCase):
         ]
 
         expected_tokens = [
-            [Token(TokenTypes.MINUS, "-", None, 0), Token(TokenTypes.NUMBER, "13", 13, 1)],
+            [
+                Token(TokenTypes.MINUS, "-", None, 0),
+                Token(TokenTypes.NUMBER, "13", 13, 1)
+            ],
             [
                 Token(TokenTypes.NUMBER, "6", 6, 0),
                 Token(TokenTypes.MINUS, "-", None, 1),
                 Token(TokenTypes.LEFT_PAREN, "(", None, 2),
                 Token(TokenTypes.MINUS, "-", None, 3),
-                Token(TokenTypes.NUMBER, "-", 13, 4),
+                Token(TokenTypes.NUMBER, "13", 13, 4),
                 Token(TokenTypes.RIGHT_PAREN, ")", None, 6), ],
             [
                 Token(TokenTypes.NUMBER, "1", 1, 0),
                 Token(TokenTypes.MINUS, "-", None, 1),
                 Token(TokenTypes.MINUS, "-", None, 2),
                 Token(TokenTypes.MINUS, "-", None, 3),
-                Token(TokenTypes.NUMBER, "1", 1, 0),
+                Token(TokenTypes.NUMBER, "1", 1, 4),
             ],
             [
                 Token(TokenTypes.MINUS, "-", None, 0),
@@ -55,7 +58,7 @@ class ParseTestCase(unittest.TestCase):
                 Token(TokenTypes.MINUS, "-", None, 2),
                 Token(TokenTypes.MINUS, "-", None, 3),
                 Token(TokenTypes.MINUS, "-", None, 4),
-                Token(TokenTypes.PLUS, "-", None, 5),
+                Token(TokenTypes.PLUS, "+", None, 5),
                 Token(TokenTypes.MINUS, "-", None, 6),
                 Token(TokenTypes.NUMBER, "1", 1, 7),
             ],
@@ -105,17 +108,17 @@ class ParseTestCase(unittest.TestCase):
                 Token(TokenTypes.NUMBER, "2", 2, 7),
             ],
             [
-                Token(TokenTypes.NUMBER, "100", 10, 0),
-                Token(TokenTypes.SLASH, "/", None, 4),
-                Token(TokenTypes.NUMBER, "3", None, 5),
-                Token(TokenTypes.PERCENTS, "%", 2, 6),
-                Token(TokenTypes.NUMBER, "2", None, 7),
-                Token(TokenTypes.STAR_STAR, "**", 1, 8),
-                Token(TokenTypes.NUMBER, "2", None, 10),
+                Token(TokenTypes.NUMBER, "100", 100, 0),
+                Token(TokenTypes.SLASH, "/", None, 3),
+                Token(TokenTypes.NUMBER, "3", 3, 4),
+                Token(TokenTypes.PERCENTS, "%", None, 5),
+                Token(TokenTypes.NUMBER, "2", 2, 6),
+                Token(TokenTypes.STAR_STAR, "**", None, 7),
+                Token(TokenTypes.NUMBER, "2", 2, 9),
             ],
             [
                 Token(TokenTypes.IDENTIFIERS, "pi", None, 0),
-                Token(TokenTypes.PLUS, "/", None, 2),
+                Token(TokenTypes.PLUS, "+", None, 2),
                 Token(TokenTypes.IDENTIFIERS, "e", None, 3),
             ],
             [
@@ -129,14 +132,14 @@ class ParseTestCase(unittest.TestCase):
                 Token(TokenTypes.LEFT_PAREN, "(", None, 3),
                 Token(TokenTypes.IDENTIFIERS, "pi", None, 4),
                 Token(TokenTypes.SLASH, "/", None, 6),
-                Token(TokenTypes.NUMBER, "2", None, 6),
-                Token(TokenTypes.RIGHT_PAREN, ")", None, 7),
+                Token(TokenTypes.NUMBER, "2", 2, 7),
+                Token(TokenTypes.RIGHT_PAREN, ")", None, 8),
             ],
             [
                 Token(TokenTypes.IDENTIFIERS, "log10", None, 0),
-                Token(TokenTypes.LEFT_PAREN, "(", None, 6),
-                Token(TokenTypes.IDENTIFIERS, "100", None, 7),
-                Token(TokenTypes.RIGHT_PAREN, ")", None, 10),
+                Token(TokenTypes.LEFT_PAREN, "(", None, 5),
+                Token(TokenTypes.NUMBER, "100", 100, 6),
+                Token(TokenTypes.RIGHT_PAREN, ")", None, 9),
             ],
             [
                 Token(TokenTypes.IDENTIFIERS, "sin", None, 0),
@@ -144,19 +147,18 @@ class ParseTestCase(unittest.TestCase):
                 Token(TokenTypes.IDENTIFIERS, "pi", None, 4),
                 Token(TokenTypes.SLASH, "/", None, 6),
                 Token(TokenTypes.NUMBER, "2", 2, 7),
-                Token(TokenTypes.RIGHT_PAREN, ")", None, 10),
-                Token(TokenTypes.STAR, "*", None, 11),
-                Token(TokenTypes.NUMBER, "1116", 1116, 12),
+                Token(TokenTypes.RIGHT_PAREN, ")", None, 8),
+                Token(TokenTypes.NUMBER, "1116", 1116, 9),
             ],
             [
                 Token(TokenTypes.NUMBER, "2", 2, 0),
                 Token(TokenTypes.STAR, "*", None, 1),
                 Token(TokenTypes.IDENTIFIERS, "sin", None, 2),
-                Token(TokenTypes.RIGHT_PAREN, "(", None, 5),
+                Token(TokenTypes.LEFT_PAREN, "(", None, 5),
                 Token(TokenTypes.IDENTIFIERS, "pi", None, 6),
                 Token(TokenTypes.SLASH, "/", None, 8),
                 Token(TokenTypes.NUMBER, "2", 2, 9),
-                Token(TokenTypes.NUMBER, ")", None, 10),
+                Token(TokenTypes.RIGHT_PAREN, ")", None, 10),
             ],
             [
                 Token(TokenTypes.NUMBER, "102", 102, 0),
@@ -174,28 +176,32 @@ class ParseTestCase(unittest.TestCase):
             ],
             [
                 Token(TokenTypes.NUMBER, "10", 10, 0),
-                Token(TokenTypes.STAR, "*", None, 0),
-                Token(TokenTypes.LEFT_PAREN, "(", None, 1),
-                Token(TokenTypes.NUMBER, "2", 2, 2),
-                Token(TokenTypes.PLUS, "+", None, 3),
-                Token(TokenTypes.NUMBER, "1", 1, 4),
-                Token(TokenTypes.NUMBER, ")", None, 5),
+                Token(TokenTypes.LEFT_PAREN, "(", None, 2),
+                Token(TokenTypes.NUMBER, "2", 2, 3),
+                Token(TokenTypes.PLUS, "+", None, 4),
+                Token(TokenTypes.NUMBER, "1", 1, 5),
+                Token(TokenTypes.RIGHT_PAREN, ")", None, 6),
             ],
             [
                 Token(TokenTypes.MINUS, "-", None, 0),
                 Token(TokenTypes.NUMBER, ".1", 0.1, 1),
             ],
             [
-                Token(TokenTypes.NUMBER, "1.0", 1, 0),
+                Token(TokenTypes.NUMBER, "1", 1, 0),
+                Token(TokenTypes.SLASH, "/", None, 1),
+                Token(TokenTypes.NUMBER, "3", 3, 2),
+            ],
+            [
+                Token(TokenTypes.NUMBER, "1.0", 1.0, 0),
                 Token(TokenTypes.SLASH, "/", None, 3),
-                Token(TokenTypes.NUMBER, "3.0", 3, 4),
+                Token(TokenTypes.NUMBER, "3.0", 3.0, 4),
             ],
             [
                 Token(TokenTypes.NUMBER, ".1", 0.1, 0),
                 Token(TokenTypes.STAR, "*", None, 3),
-                Token(TokenTypes.NUMBER, "2.0", 2, 5),
-                Token(TokenTypes.STAR_STAR, "**", None, 6),
-                Token(TokenTypes.NUMBER, "56.0", 56, 7),
+                Token(TokenTypes.NUMBER, "2.0", 2.0, 5),
+                Token(TokenTypes.STAR_STAR, "**", None, 8),
+                Token(TokenTypes.NUMBER, "56.0", 56.0, 10),
             ],
         ]
 
@@ -203,9 +209,10 @@ class ParseTestCase(unittest.TestCase):
             self._test_scanner(source, expected_tokens)
 
     def _test_scanner(self, source, expected_tokens):
-        scanner = Scanner(source)
-        tokens = scanner.get_tokens()
-        self.assertListEqual(tokens, expected_tokens)
+        with self.subTest(f"Tested expression: '{source}'"):
+            scanner = Scanner(source)
+            tokens = scanner.get_tokens()
+            self._assert_tokens_equal(tokens, expected_tokens)
 
     def _assert_tokens_equal(self, actual, expected):
         for a, e in zip(actual, expected):
