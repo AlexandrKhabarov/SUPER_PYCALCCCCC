@@ -62,3 +62,7 @@ class NotEnoughArguments(CustomIndexError):
 
 class EmptyExpression(CustomIndexError):
     ERROR_MESSAGE = "Empty expressions aren't calculated"
+
+
+def error(pos, message):
+    raise Exception(f"ERROR: At {pos}, Message: {message}")
