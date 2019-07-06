@@ -53,17 +53,22 @@ class Interpreter:
         return self.evaluate(expr.expression)
 
     def visit_unary_expr(self, expr: Unary):
-        right = self.evaluate(expr)
+        right = self.evaluate(expr.right)
 
         if expr.operator.type_ == TokenTypes.MINUS:
+            right = self.evaluate(expr.right)
             self.check_number_operand(expr.operator, right)
             return -float(right)
+        elif expr.operator.type_ == TokenTypes.PLUS:
+            right = self.evaluate(expr.right)
+            self.check_number_operand(expr.operator, right)
+            return +right
         elif expr.operator.type_ == TokenTypes.BANG:
             return not self.is_truthy(right)
 
     def visit_binary_expr(self, expr: Binary):
-        left = self.evaluate(expr)
-        right = self.evaluate(expr)
+        left = self.evaluate(expr.left)
+        right = self.evaluate(expr.right)
 
         if expr.operator.type_ == TokenTypes.MINUS:
             self.check_number_operands(expr.operator, left, right)
@@ -75,9 +80,8 @@ class Interpreter:
             self.check_number_operands(expr.operator, left, right)
             return float(left) * float(right)
         elif expr.operator.type_ == TokenTypes.PLUS:
-            if isinstance(left, float) and isinstance(right, float):
-                return left + right
-            runtime_error(expr.operator, "Operand must be two numbers")
+            self.check_number_operands(expr.operator, left, right)
+            return left + right
         elif expr.operator.type_ == TokenTypes.GREATER:
             self.check_number_operands(expr.operator, left, right)
             return left > right
@@ -98,11 +102,11 @@ class Interpreter:
             return self.is_equal(left, right)
 
     def check_number_operand(self, operator, operand):
-        if not isinstance(operand, float):
+        if not isinstance(operand, (float, int)):
             runtime_error(operator, "Operand must be number.")
 
     def check_number_operands(self, operator, left, right):
-        if not isinstance(left, float) and not isinstance(right, float):
+        if not isinstance(left, (float, int)) and not isinstance(right, (float, int)):
             runtime_error(operator, "Operands must be numbers.")
 
     def is_truthy(self, obj):
