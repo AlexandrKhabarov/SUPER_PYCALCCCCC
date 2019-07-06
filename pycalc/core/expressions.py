@@ -1,5 +1,8 @@
 import abc
 
+from pycalc.core.errors import runtime_error
+from pycalc.core.token_types import TokenTypes
+
 
 class Expr(abc.ABC):
     @abc.abstractmethod
@@ -40,3 +43,75 @@ class Unary(Expr):
 
     def accept(self, visitor):
         return visitor.visit_unary_expr(self)
+
+
+class Interpreter:
+    def visit_literal_expr(self, expr: Literal):
+        return expr.value
+
+    def visit_grouping_expr(self, expr: Grouping):
+        return self.evaluate(expr.expression)
+
+    def visit_unary_expr(self, expr: Unary):
+        right = self.evaluate(expr)
+
+        if expr.operator.type_ == TokenTypes.MINUS:
+            self.check_number_operand(expr.operator, right)
+            return -float(right)
+        elif expr.operator.type_ == TokenTypes.BANG:
+            return not self.is_truthy(right)
+
+    def visit_binary_expr(self, expr: Binary):
+        left = self.evaluate(expr)
+        right = self.evaluate(expr)
+
+        if expr.operator.type_ == TokenTypes.MINUS:
+            self.check_number_operands(expr.operator, left, right)
+            return float(left) - float(right)
+        elif expr.operator.type_ == TokenTypes.SLASH:
+            self.check_number_operands(expr.operator, left, right)
+            return float(left) - float(right)
+        elif expr.operator.type_ == TokenTypes.STAR:
+            self.check_number_operands(expr.operator, left, right)
+            return float(left) * float(right)
+        elif expr.operator.type_ == TokenTypes.PLUS:
+            if isinstance(left, float) and isinstance(right, float):
+                return left + right
+            runtime_error(expr.operator, "Operand must be two numbers")
+        elif expr.operator.type_ == TokenTypes.GREATER:
+            self.check_number_operands(expr.operator, left, right)
+            return left > right
+        elif expr.operator.type_ == TokenTypes.GREATER_EQUAL:
+            self.check_number_operands(expr.operator, left, right)
+            return left >= right
+        elif expr.operator.type_ == TokenTypes.LESS:
+            self.check_number_operands(expr.operator, left, right)
+            return left < right
+        elif expr.operator.type_ == TokenTypes.LESS_EQUAL:
+            self.check_number_operands(expr.operator, left, right)
+            return left <= right
+        elif expr.operator.type_ == TokenTypes.BANG_EQUAL:
+            self.check_number_operands(expr.operator, left, right)
+            return not self.is_equal(left, right)
+        elif expr.operator.type_ == TokenTypes.EQUAL_EQUAL:
+            self.check_number_operands(expr.operator, left, right)
+            return self.is_equal(left, right)
+
+    def check_number_operand(self, operator, operand):
+        if not isinstance(operand, float):
+            runtime_error(operator, "Operand must be number.")
+
+    def check_number_operands(self, operator, left, right):
+        if not isinstance(left, float) and not isinstance(right, float):
+            runtime_error(operator, "Operands must be numbers.")
+
+    def is_truthy(self, obj):
+        if obj is None or isinstance(obj, bool):
+            return bool(obj)
+        return True
+
+    def is_equal(self, a, b):
+        return a == b
+
+    def evaluate(self, expr):
+        return expr.accept(self)
