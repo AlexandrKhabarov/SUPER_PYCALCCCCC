@@ -1,6 +1,6 @@
 import inspect
 
-from pycalc.core.exceptions import ModuleNotFound
+from pycalc.core.errors import ModuleNotFound
 
 
 def add_available_names_from_module(available_functions, available_constants, module_name):

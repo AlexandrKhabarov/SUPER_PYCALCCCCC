@@ -3,7 +3,7 @@ from math import *
 from unittest.mock import patch
 
 from pycalc.core.available_names import available_functions, available_constants
-from pycalc.core.exceptions import TooManyBrackets, TooManySpaces, UnrecognizedLexem, TooManyArguments, \
+from pycalc.core.errors import TooManyBrackets, TooManySpaces, UnrecognizedLexem, TooManyArguments, \
     UnrecognizedOperator, NotEnoughArguments, EmptyExpression
 from pycalc.core.recognizer import calculation
 

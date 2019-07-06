@@ -1,6 +1,6 @@
 from typing import List, Dict, Union, Callable, Any, Generator, Tuple
 
-from pycalc.core.exceptions import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, \
+from pycalc.core.errors import TooManySpaces, TooManyBrackets, TooManyArguments, UnrecognizedOperator, \
     UnrecognizedLexem, UnrecognizedFunc, NotEnoughArguments, EmptyExpression
 from pycalc.core.operatios import available_operations, available_order_symbols
 from pycalc.core.types import Digit, Operator, MathExpr, Bracket, OpenBracket, CloseBracket, CustomType
