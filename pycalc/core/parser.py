@@ -50,7 +50,12 @@ class Parser:
     def multiplication(self):
         expr = self.unary()
 
-        while self.match(TokenTypes.SLASH, TokenTypes.STAR, TokenTypes.SLASH_SLASH, TokenTypes.PERCENTS):
+        while self.match(TokenTypes.SLASH,
+                         TokenTypes.STAR,
+                         TokenTypes.SLASH_SLASH,
+                         TokenTypes.PERCENTS,
+                         TokenTypes.CAP,
+                         TokenTypes.STAR_STAR):
             operator = self.previous()
             right = self.unary()
             expr = Binary(expr, operator, right)
@@ -58,7 +63,7 @@ class Parser:
         return expr
 
     def unary(self):
-        if self.match(TokenTypes.BANG, TokenTypes.MINUS, TokenTypes.CAP, TokenTypes.STAR_STAR, TokenTypes.PLUS):
+        if self.match(TokenTypes.BANG, TokenTypes.MINUS, TokenTypes.PLUS):
             operator = self.previous()
             right = self.unary()
             return Unary(operator, right)
