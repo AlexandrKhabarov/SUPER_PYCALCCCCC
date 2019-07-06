@@ -19,6 +19,8 @@ class Scanner:
         while not self.is_end:
             self._start = self._current
             self._scan_token()
+        eof = Token(TokenTypes.EOF, "", None, self._start)
+        self.tokens.append(eof)
 
     @property
     def is_end(self):
