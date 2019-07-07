@@ -82,6 +82,15 @@ class Interpreter:
         elif expr.operator.type_ == TokenTypes.PLUS:
             self.check_number_operands(expr.operator, left, right)
             return left + right
+        elif expr.operator.type_ == TokenTypes.CAP or expr.operator.type_ == TokenTypes.STAR_STAR:
+            self.check_number_operands(expr.operator, left, right)
+            return left ** right
+        elif expr.operator.type_ == TokenTypes.SLASH_SLASH:
+            self.check_number_operands(expr.operator, left, right)
+            return left // right
+        elif expr.operator.type_ == TokenTypes.PERCENTS:
+            self.check_number_operands(expr.operator, left, right)
+            return left % right
         elif expr.operator.type_ == TokenTypes.GREATER:
             self.check_number_operands(expr.operator, left, right)
             return left > right
