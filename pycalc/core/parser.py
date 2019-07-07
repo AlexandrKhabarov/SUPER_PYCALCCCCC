@@ -1,5 +1,5 @@
 from pycalc.core.errors import parser_error
-from pycalc.core.expressions import Binary, Literal, Grouping, Unary, Call
+from pycalc.core.expressions import Binary, Literal, Grouping, Unary, Call, Variable
 from pycalc.core.token_types import TokenTypes
 
 
@@ -84,6 +84,8 @@ class Parser:
     def primary(self):
         if self.match(TokenTypes.NUMBER):
             return Literal(self.previous().literal)
+        elif self.match(TokenTypes.IDENTIFIERS):
+            return Variable(self.previous())
         elif self.match(TokenTypes.LEFT_PAREN):
             expr = self.expression()
             self.consume(TokenTypes.RIGHT_PAREN, "Expect ')' after expression.")

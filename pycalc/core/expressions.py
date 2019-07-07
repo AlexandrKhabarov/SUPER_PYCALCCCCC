@@ -1,5 +1,6 @@
 import abc
 
+from pycalc.core.environment import Environment
 from pycalc.core.errors import runtime_error
 from pycalc.core.token_types import TokenTypes
 
@@ -8,6 +9,16 @@ class Expr(abc.ABC):
     @abc.abstractmethod
     def accept(self, visitor):
         pass
+
+
+class Call(Expr):
+    def __init__(self, callable_, paren, arguments):
+        self.callable_ = callable_
+        self.paren = paren
+        self.arguments = arguments
+
+    def accept(self, visitor):
+        return visitor.visit_call_expr(self)
 
 
 class Binary(Expr):
@@ -45,7 +56,46 @@ class Unary(Expr):
         return visitor.visit_unary_expr(self)
 
 
+class Variable(Expr):
+    def __init__(self, name):
+        self.name = name
+
+    def accept(self, visitor):
+        return visitor.visit_variable_expr(self)
+
+
+class Callable(abc.ABC):
+    def __init__(self, arity):
+        self.arity = arity
+
+    @abc.abstractmethod
+    def call(self, visitor, arguments):
+        pass
+
+
 class Interpreter:
+    def __init__(self):
+        self.globals = Environment()
+        self.environment = self.globals
+
+    def visit_variable_expr(self, expr):
+        return self.globals.get(expr.name)
+
+    def visit_call_expr(self, expr):
+        callee = self.evaluate(expr.callee)
+        arguments = []
+
+        for arg in expr.arguments:
+            arguments.append(self.evaluate(arg))
+
+        if not isinstance(callee, Callable):
+            runtime_error(callee, "Can only call functions and classes")
+
+        if len(arguments) != callee.arity():
+            runtime_error(callee, f"Expected {callee.arity()} arguments but got {len(arguments)}.")
+
+        return callee.call(self, arguments)
+
     def visit_literal_expr(self, expr: Literal):
         return expr.value
 
