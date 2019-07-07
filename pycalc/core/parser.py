@@ -1,5 +1,5 @@
 from pycalc.core.errors import parser_error
-from pycalc.core.expressions import Binary, Literal, Grouping, Unary
+from pycalc.core.expressions import Binary, Literal, Grouping, Unary, Call
 from pycalc.core.token_types import TokenTypes
 
 
@@ -68,7 +68,18 @@ class Parser:
             right = self.unary()
             return Unary(operator, right)
 
-        return self.primary()
+        return self.call()
+
+    def call(self):
+        expr = self.primary()
+
+        while True:
+            if self.match(TokenTypes.LEFT_PAREN):
+                expr = self.find_call(expr)
+            else:
+                break
+
+        return expr
 
     def primary(self):
         if self.match(TokenTypes.NUMBER):
@@ -79,6 +90,16 @@ class Parser:
             return Grouping(expr)
 
         parser_error(self.peek(), "Expect Expression.")
+
+    def find_call(self, callable_):
+        arguments = []
+        if not self.check(TokenTypes.RIGHT_PAREN):
+            while self.match(TokenTypes.COMMA):
+                arguments.append(self.expression())
+
+        paren = self.consume(TokenTypes.RIGHT_PAREN, "Expect ')' after arguments.")
+
+        return Call(callable_, paren, arguments)
 
     def match(self, *types):
         for type_ in types:
