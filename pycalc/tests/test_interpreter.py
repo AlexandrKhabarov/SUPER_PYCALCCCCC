@@ -82,7 +82,76 @@ class InterpreterTestCase(unittest.TestCase):
                     Token(TokenTypes.STAR, "*", None, 9),
                     Literal(3),
                 )
-            )
+            ),
+            Binary(
+                Literal(5),
+                Token(TokenTypes.SLASH_SLASH, "//", None, 1),
+                Literal(2),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.STAR_STAR, "**", None, 1),
+                Literal(2),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.CAP, "^", None, 1),
+                Literal(2),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.CAP, "^", None, 1),
+                Binary(
+                    Literal(2),
+                    Token(TokenTypes.CAP, "^", None, 1),
+                    Literal(2),
+                ),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.CAP, "^", None, 2),
+                Unary(
+                    Token(TokenTypes.MINUS, "-", None, 0),
+                    Literal(2),
+                )
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.CAP, "^", None, 2),
+                Unary(
+                    Token(TokenTypes.MINUS, "-", None, 0),
+                    Binary(
+                        Literal(2),
+                        Token(TokenTypes.CAP, "^", None, 4),
+                        Literal(2),
+                    )
+                )
+            ),
+            Binary(
+                Literal(5),
+                Token(TokenTypes.PERCENTS, "%", None, 1),
+                Literal(2),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.EQUAL_EQUAL, "==", None, 1),
+                Literal(2),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.EQUAL_EQUAL, "==", None, 1),
+                Literal(3),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.LESS_EQUAL, "<=", None, 1),
+                Literal(3),
+            ),
+            Binary(
+                Literal(2),
+                Token(TokenTypes.GREATER_EQUAL, "<=", None, 1),
+                Literal(3),
+            ),
         ]
 
         expected_results = [
@@ -91,7 +160,18 @@ class InterpreterTestCase(unittest.TestCase):
             0,
             -1,
             5,
-            25
+            25,
+            2,
+            4,
+            4,
+            16,
+            1 / 4,
+            1 / 16,
+            1,
+            True,
+            False,
+            True,
+            False
         ]
 
         for a, e, in zip(test_cases, expected_results):
