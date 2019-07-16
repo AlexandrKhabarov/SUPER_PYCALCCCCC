@@ -10,6 +10,6 @@ class Environment:
 
     def get(self, name):
         try:
-            return self.map[name.lexem]
+            return self.map[name.lexeme]
         except KeyError:
             runtime_error(name, f"Undefined variable '{name.lexeme}'.")
