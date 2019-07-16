@@ -1,18 +1,25 @@
-from pycalc.console_app.parser import ArgumentParser
-from pycalc.core.available_names import available_functions, available_constants
-from pycalc.core.recognizer import calculation
-from pycalc.core.utils import add_available_names_from_module
+import argparse
+
+from pycalc.core.calculator import calculate
+
+
+class ArgumentParser:
+
+    @classmethod
+    def parse_arguments(cls):
+        parser = argparse.ArgumentParser(description='Pure-python command-line calculator.')
+        parser.add_argument('expression', type=str, help='Mathematics expression')
+        parser.add_argument("-m", '--module', nargs="+", default=[], help="module_name")
+
+        args = parser.parse_args()
+        return args.expression, args.module
 
 
 def main():
     expression, module_names = ArgumentParser.parse_arguments()
-    try:
-        for module_name in module_names:
-            add_available_names_from_module(available_functions, available_constants, module_name)
-        print(calculation(expression, available_functions, available_constants))
-    except Exception as e:
-        print(e)
+    result = calculate(expression)
+    return result
 
 
 if __name__ == "__main__":
-    main()
+    print(main())
