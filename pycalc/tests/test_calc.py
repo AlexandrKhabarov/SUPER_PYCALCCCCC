@@ -96,29 +96,29 @@ class GoodTests(unittest.TestCase):
 
     def test_error_cases(self):
         test_cases = [
-            ""
-            "+"
-            "1-"
-            "1 2"
-            "ee"
-            "123e"
-            "==7"
-            "1 * * 2"
-            "1 + 2(3 * 4))"
-            "((1+2)"
-            "1 + 1 2 3 4 5 6 "
-            "log100(100)"
-            "------"
-            "5 > = 6"
-            "5 / / 6"
-            "6 < = 6"
-            "6 * * 6"
-            "((((("
+            "",
+            "+",
+            "1-",
+            "1 2",
+            "ee",
+            "123e",
+            "==7",
+            "1 * * 2",
+            "1 + 2(3 * 4))",
+            "((1+2)",
+            "1 + 1 2 3 4 5 6 ",
+            "log100(100)",
+            "------",
+            "5 > = 6",
+            "5 / / 6",
+            "6 < = 6",
+            "6 * * 6",
+            "(((((",
         ]
 
-        for source, expected_result in test_cases:
+        for source in test_cases:
             with self.assertRaises(Exception):
-                self._assert_calculation(source, expected_result)
+                self._assert_calculation(source, None)
 
     def _assert_calculation(self, source, expected_result):
         with self.subTest(msg=source):
