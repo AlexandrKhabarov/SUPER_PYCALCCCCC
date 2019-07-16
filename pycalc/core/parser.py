@@ -9,11 +9,10 @@ class Parser:
         self._current = 0
 
     def parse(self):
-        try:
-            return self.expression()
-        except Exception as e:
-            print(e)
-            pass
+        expression = self.expression()
+        if len(self.tokens) - 1 != self._current:
+            raise Exception
+        return expression
 
     def expression(self):
         return self.equality()

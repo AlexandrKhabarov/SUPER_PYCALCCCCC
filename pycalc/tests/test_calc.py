@@ -36,7 +36,7 @@ class IntegrationTests(unittest.TestCase):
             ("log(e)", math.log(math.e)),
             ("sin(pi/2)", math.sin(math.pi / 2)),
             ("log10(100)", math.log10(100)),
-            ("sin(pi/2)1116", math.sin(math.pi / 2) * 1116),
+            ("sin(pi/2)*1116", math.sin(math.pi / 2) * 1116),
             ("2*sin(pi/2)", 2 * math.sin(math.pi / 2)),
         ]
 
@@ -67,7 +67,7 @@ class IntegrationTests(unittest.TestCase):
         test_cases = [
             ("(100)", 100),
             ("666", 666),
-            ("10(2+1)", 10 * (2 + 1)),
+            ("10*(2+1)", 10 * (2 + 1)),
             ("-.1", -.1),
             ("1/3", 1 / 3),
             ("1.0/3.0", 1.0 / 3.0),
@@ -77,7 +77,7 @@ class IntegrationTests(unittest.TestCase):
             ("(2.0**(pi/pi+e/e+2.0**0.0))**(1.0/3.0)",
              (2.0 ** (math.pi / math.pi + math.e / math.e + 2.0 ** 0.0)) ** (1.0 / 3.0)),
             ("sin(pi/2**1) + log(1*4+2**2+1, 3**2)", math.sin(math.pi / 2 ** 1) + math.log(1 * 4 + 2 ** 2 + 1, 3 ** 2)),
-            ("10e^0log10(.4* -5/ -0.1-10) - -abs(-53/10) + -5",
+            ("10*e^0*log10(.4* -5/ -0.1-10) - -abs(-53/10) + -5",
              10 * math.e ** 0 * math.log10(.4 * -5 / -0.1 - 10) - -abs(-53 / 10) + -5),
             (
                 "sin(-cos(-sin(3.0)-cos(-sin(-3.0*5.0)-sin(cos(log10(43.0))))+cos(sin(sin(34.0-2.0**2.0))))--cos(1.0)--cos(0.0)**3.0)",
@@ -117,8 +117,8 @@ class IntegrationTests(unittest.TestCase):
         ]
 
         for source in test_cases:
-            with self.assertRaises(Exception):
-                self._assert_calculation(source, None)
+            with self.assertRaises(Exception, msg=source):
+                result = calculate(source)
 
     def _assert_calculation(self, source, expected_result):
         with self.subTest(msg=source):
