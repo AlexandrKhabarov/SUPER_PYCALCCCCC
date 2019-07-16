@@ -1,6 +1,6 @@
 import abc
 
-from pycalc.core.environment import Environment
+from pycalc.core.environment import Environment, Callable
 from pycalc.core.errors import runtime_error
 from pycalc.core.token_types import TokenTypes
 
@@ -64,15 +64,6 @@ class Variable(Expr):
         return visitor.visit_variable_expr(self)
 
 
-class Callable(abc.ABC):
-    def __init__(self, arity):
-        self.arity = arity
-
-    @abc.abstractmethod
-    def call(self, visitor, arguments):
-        pass
-
-
 class Interpreter:
     def __init__(self):
         self.globals = Environment()
@@ -81,19 +72,16 @@ class Interpreter:
         return self.globals.get(expr.name)
 
     def visit_call_expr(self, expr):
-        callee = self.evaluate(expr.callee)
+        callable_ = self.evaluate(expr.callable_)
         arguments = []
 
         for arg in expr.arguments:
             arguments.append(self.evaluate(arg))
 
-        if not isinstance(callee, Callable):
-            runtime_error(callee, "Can only call functions and classes")
+        if not isinstance(callable_, Callable):
+            runtime_error(callable_, "Can only call functions")
 
-        if len(arguments) != callee.arity():
-            runtime_error(callee, f"Expected {callee.arity()} arguments but got {len(arguments)}.")
-
-        return callee.call(self, arguments)
+        return callable_.call(arguments)
 
     def visit_literal_expr(self, expr: Literal):
         return expr.value

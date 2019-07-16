@@ -3,8 +3,8 @@ from pycalc.core.parser import Parser
 from pycalc.core.scanner import Scanner
 
 
-def calculate(source, modules=None):
-    assert isinstance(modules, (list, type(None)))
+def calculate(source, module_names=None):
+    assert isinstance(module_names, (list, type(None)))
 
     scanner = Scanner(source)
     tokens = scanner.get_tokens()
@@ -12,8 +12,8 @@ def calculate(source, modules=None):
     tree = parser.parse()
     interpreter = Interpreter()
 
-    if modules is not None:
-        interpreter.globals.update(modules)
+    if module_names is not None:
+        interpreter.globals.update(module_names)
 
     result = interpreter.evaluate(tree)
     return result

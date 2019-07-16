@@ -105,6 +105,7 @@ class Parser:
     def find_call(self, callable_):
         arguments = []
         if not self.check(TokenTypes.RIGHT_PAREN):
+            arguments.append(self.expression())
             while self.match(TokenTypes.COMMA):
                 arguments.append(self.expression())
 
