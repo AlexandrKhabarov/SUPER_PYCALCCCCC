@@ -76,7 +76,6 @@ class Callable(abc.ABC):
 class Interpreter:
     def __init__(self):
         self.globals = Environment()
-        self.environment = self.globals
 
     def visit_variable_expr(self, expr):
         return self.globals.get(expr.name)

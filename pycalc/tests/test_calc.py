@@ -5,8 +5,8 @@ import math
 from pycalc.core.calculator import calculate
 
 
-class GoodTests(unittest.TestCase):
-    def test_uanry_operators(self):
+class IntegrationTests(unittest.TestCase):
+    def test_unary_operators(self):
         test_cases = [
             ("-13", -13),
             ("6-(-13)", 19),
