@@ -48,16 +48,25 @@ class Parser:
         return expr
 
     def multiplication(self):
-        expr = self.unary()
+        expr = self.exponentiation()
 
         while self.match(TokenTypes.SLASH,
                          TokenTypes.STAR,
                          TokenTypes.SLASH_SLASH,
-                         TokenTypes.PERCENTS,
-                         TokenTypes.CAP,
+                         TokenTypes.PERCENTS, ):
+            operator = self.previous()
+            right = self.exponentiation()
+            expr = Binary(expr, operator, right)
+
+        return expr
+
+    def exponentiation(self):
+        expr = self.unary()
+
+        while self.match(TokenTypes.CAP,
                          TokenTypes.STAR_STAR):
             operator = self.previous()
-            right = self.unary()
+            right = self.exponentiation()
             expr = Binary(expr, operator, right)
 
         return expr
