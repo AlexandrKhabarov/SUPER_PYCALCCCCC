@@ -124,7 +124,7 @@ class Interpreter:
             return float(left) - float(right)
         elif expr.operator.type_ == TokenTypes.SLASH:
             self.check_number_operands(expr.operator, left, right)
-            return float(left) - float(right)
+            return float(left) / float(right)
         elif expr.operator.type_ == TokenTypes.STAR:
             self.check_number_operands(expr.operator, left, right)
             return float(left) * float(right)
