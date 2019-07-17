@@ -6,7 +6,7 @@ setup(
     description="Pure-python command-line calculator.",
     author="Alexander Khabarov",
     author_email="rob.sumsung.mi3@gmail.com",
-    packages=["pycalc", "pycalc.console_app", "pycalc.core"],
+    packages=["pycalc", "pycalc.core"],
     test_suite="pycalc.tests",
     url="https://github.com/AlexandrKhabarov/SUPER_PYCALCCCCC",
     classifiers=[

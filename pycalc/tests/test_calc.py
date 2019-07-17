@@ -118,7 +118,7 @@ class IntegrationTests(unittest.TestCase):
 
         for source in test_cases:
             with self.assertRaises(Exception, msg=source):
-                result = calculate(source)
+                calculate(source)
 
     def _assert_calculation(self, source, expected_result):
         with self.subTest(msg=source):
