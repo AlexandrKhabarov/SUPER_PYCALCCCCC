@@ -152,8 +152,8 @@ class Interpreter:
             runtime_error(operator, "Operand must be number.")
 
     def check_number_operands(self, operator, left, right):
-        if not isinstance(left, (float, int)) and not isinstance(right, (float, int)):
-            runtime_error(operator, "Operands must be numbers.")
+        self.check_number_operand(operator, left)
+        self.check_number_operand(operator, right)
 
     def is_truthy(self, obj):
         if obj is None or isinstance(obj, bool):

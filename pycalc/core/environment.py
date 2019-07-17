@@ -1,4 +1,3 @@
-import abc
 import importlib
 
 from pycalc.core.errors import runtime_error
@@ -28,7 +27,7 @@ class Environment:
                 self.define(name, obj)
 
 
-class Callable(abc.ABC):
+class Callable():
 
     def call(self, arguments):
         pass
