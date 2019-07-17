@@ -96,7 +96,7 @@ class Scanner:
         return self.source[self._current]
 
     def _is_digit(self, c):
-        return c >= "0" and c <= "9"
+        return c.isdigit()
 
     def _number(self):
         while self._is_digit(self._peek()):
@@ -118,9 +118,7 @@ class Scanner:
         return self.source[self._current + 1]
 
     def _is_alpha(self, c):
-        return ((c >= "a" and c <= "z")
-                or (c >= "A" and c <= "Z")
-                or (c == "_"))
+        return c.isalpha() or c == "_"
 
     def _identifier(self):
         while self._is_alpha_numeric(self._peek()):
