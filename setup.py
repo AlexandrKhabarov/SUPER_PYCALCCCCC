@@ -24,7 +24,8 @@ setup(
     url="https://github.com/AlexandrKhabarov/pycalc",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        'Environment :: Console',
+        'License :: OSI Approved :: Apache Software License',
         "Operating System :: OS Independent",
     ],
     entry_points={
