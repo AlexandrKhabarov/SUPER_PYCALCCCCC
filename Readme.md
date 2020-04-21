@@ -28,7 +28,7 @@ ERROR: negative number cannot be raised to a fractional power
 ```
 
 ### Supported mathematical operations
-* arithmetic (`+`, `-`, `*`, `/`, `//`, `%`, `^`, '**') (`^` is a power)
+* arithmetic (`+`, `-`, `*`, `/`, `//`, `%`, `^`, `**`) (`^` is a power)
 * comparison (`<`, `<=`, `==`, `!=`, `>=`, `>`)
 * built-in python functions (`abs`, `pow`, `round`)
 * functions from standard python module math (trigonometry, logarithms, etc.)

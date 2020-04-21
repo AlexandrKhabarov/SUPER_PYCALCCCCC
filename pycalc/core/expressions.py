@@ -147,7 +147,8 @@ class Interpreter:
             self.check_number_operands(expr.operator, left, right)
             return self.is_equal(left, right)
 
-    def check_number_operand(self, operator, operand):
+    @staticmethod
+    def check_number_operand(operator, operand):
         if not isinstance(operand, (float, int)):
             runtime_error(operator, "Operand must be number.")
 
@@ -155,12 +156,14 @@ class Interpreter:
         self.check_number_operand(operator, left)
         self.check_number_operand(operator, right)
 
-    def is_truthy(self, obj):
+    @staticmethod
+    def is_truthy(obj):
         if obj is None or isinstance(obj, bool):
             return bool(obj)
         return True
 
-    def is_equal(self, a, b):
+    @staticmethod
+    def is_equal(a, b):
         return a == b
 
     def evaluate(self, expr):
