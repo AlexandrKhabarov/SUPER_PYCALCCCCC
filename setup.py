@@ -8,7 +8,7 @@ root_dir = os.path.dirname(__file__)
 
 def pycalc_test_suite():
     test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover(os.path.join(root_dir, 'tests'), pattern='test_*.py')
+    test_suite = test_loader.discover(os.path.join(root_dir, 'pycalc', 'tests'), pattern='test_*.py')
     return test_suite
 
 
