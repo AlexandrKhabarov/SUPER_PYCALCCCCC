@@ -37,8 +37,3 @@ ERROR: negative number cannot be raised to a fractional power
 ### Distribution
 * Utility is wrapped into distribution package with `setuptools`.
 * Package export CLI utility named `pycalc`.
-
-### Codestyle
-* Each methods, classes, functions and modules has docstring that describe behaviour of function.
-* Code correspond to pep8.
-* Each line length up to 120 symbols.
