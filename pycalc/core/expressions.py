@@ -100,7 +100,7 @@ class Interpreter:
             right = self.evaluate(expr.right)
             self.check_number_operand(expr.operator, right)
             return +right
-        elif expr.operator.type_ == TokenTypes.BANG:
+        elif expr.operator.type_ == TokenTypes.NOT:
             return not self.is_truthy(right)
 
     def visit_binary_expr(self, expr: Binary):
@@ -140,7 +140,7 @@ class Interpreter:
         elif expr.operator.type_ == TokenTypes.LESS_EQUAL:
             self.check_number_operands(expr.operator, left, right)
             return left <= right
-        elif expr.operator.type_ == TokenTypes.BANG_EQUAL:
+        elif expr.operator.type_ == TokenTypes.NOT_EQUAL:
             self.check_number_operands(expr.operator, left, right)
             return not self.is_equal(left, right)
         elif expr.operator.type_ == TokenTypes.EQUAL_EQUAL:

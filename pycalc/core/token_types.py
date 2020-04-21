@@ -19,8 +19,8 @@ class TokenTypes(Enum):
     STAR_STAR = auto()
     CAP = auto()
 
-    BANG = auto()
-    BANG_EQUAL = auto()
+    NOT = auto()
+    NOT_EQUAL = auto()
     EQUAL = auto()
     EQUAL_EQUAL = auto()
     GREATER = auto()

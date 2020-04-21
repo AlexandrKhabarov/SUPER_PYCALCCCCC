@@ -48,7 +48,7 @@ class Scanner:
             type_ = TokenTypes.STAR_STAR if self._match("*") else TokenTypes.STAR
             self._add_token(type_)
         elif c == "!":
-            type_ = TokenTypes.BANG_EQUAL if self._match("=") else TokenTypes.BANG
+            type_ = TokenTypes.NOT_EQUAL if self._match("=") else TokenTypes.NOT
             self._add_token(type_)
         elif c == "=":
             type_ = TokenTypes.EQUAL_EQUAL if self._match("=") else TokenTypes.EQUAL

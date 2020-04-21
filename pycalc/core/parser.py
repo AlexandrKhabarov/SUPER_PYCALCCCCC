@@ -20,7 +20,7 @@ class Parser:
     def equality(self):
         expr = self.comparison()
 
-        while self.match(TokenTypes.BANG_EQUAL, TokenTypes.EQUAL_EQUAL):
+        while self.match(TokenTypes.NOT_EQUAL, TokenTypes.EQUAL_EQUAL):
             operator = self.previous()
             right = self.comparison()
             expr = Binary(expr, operator, right)
@@ -71,7 +71,7 @@ class Parser:
         return expr
 
     def unary(self):
-        if self.match(TokenTypes.BANG, TokenTypes.MINUS, TokenTypes.PLUS):
+        if self.match(TokenTypes.NOT, TokenTypes.MINUS, TokenTypes.PLUS):
             operator = self.previous()
             right = self.unary()
             return Unary(operator, right)
